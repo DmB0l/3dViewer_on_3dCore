@@ -1,11 +1,30 @@
 #include "drawing3d.h"
 
 Drawing3d::Drawing3d(QObject *parent) : QObject(parent)
-{
+{}
 
+Qt3DCore::QEntity* Drawing3d::drawPlane(QVector3D pos, double width, double height, QColor color, Qt3DCore::QEntity *root) {
+    Qt3DExtras::QPlaneMesh *planeMesh = new Qt3DExtras::QPlaneMesh();
+    planeMesh->setWidth(width);
+    planeMesh->setHeight(height);
+
+    auto *planeTransform = new Qt3DCore::QTransform();
+    planeTransform->setTranslation(pos);
+
+    auto *planeMaterial = new Qt3DExtras::QPhongMaterial(root);
+    planeMaterial->setDiffuse(color);
+
+    Qt3DCore::QEntity *planeEntity = new Qt3DCore::QEntity(root);
+    planeEntity->addComponent(planeMaterial);
+    planeEntity->addComponent(planeMesh);
+    planeEntity->addComponent(planeTransform);
+
+    planeEntity->setObjectName("plane");
+
+    return planeEntity;
 }
 
-Qt3DCore::QEntity* Drawing3d::drawSimpleCube(QVector3D pos, double size, QColor color, Qt3DCore::QEntity *root) {
+Qt3DCore::QEntity* Drawing3d::drawCube(QVector3D pos, double size, QColor color, Qt3DCore::QEntity *root) {
     // Cuboid shape data
     Qt3DExtras::QCuboidMesh *cuboid = new Qt3DExtras::QCuboidMesh();
 
@@ -18,12 +37,34 @@ Qt3DCore::QEntity* Drawing3d::drawSimpleCube(QVector3D pos, double size, QColor 
     cuboidMaterial->setDiffuse(color);
 
     //Cuboid
-    Qt3DCore::QEntity *m_cuboidEntity = new Qt3DCore::QEntity(root);
-    m_cuboidEntity->addComponent(cuboid);
-    m_cuboidEntity->addComponent(cuboidMaterial);
-    m_cuboidEntity->addComponent(cuboidTransform);
+    Qt3DCore::QEntity *cuboidEntity = new Qt3DCore::QEntity(root);
+    cuboidEntity->addComponent(cuboid);
+    cuboidEntity->addComponent(cuboidMaterial);
+    cuboidEntity->addComponent(cuboidTransform);
 
-    return m_cuboidEntity;
+    cuboidEntity->setObjectName("cube");
+
+    return cuboidEntity;
+}
+
+Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor color, Qt3DCore::QEntity *root) {
+    Qt3DExtras::QSphereMesh *sphereMesh = new Qt3DExtras::QSphereMesh();
+    sphereMesh->setRadius(radius);
+
+    Qt3DExtras::QPhongMaterial *material = new Qt3DExtras::QPhongMaterial();
+    material->setDiffuse(color);
+
+    Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
+    transform->setTranslation(pos);
+
+    Qt3DCore::QEntity *sphereEntity = new Qt3DCore::QEntity(root);
+    sphereEntity->addComponent(sphereMesh);
+    sphereEntity->addComponent(material);
+    sphereEntity->addComponent(transform);
+
+    sphereEntity->setObjectName("sphere");
+
+    return sphereEntity;
 }
 
 Qt3DCore::QEntity* Drawing3d::drawLine(double x1, double y1, double z1,
@@ -88,34 +129,25 @@ QVector<LineEntity*> Drawing3d::createGrid(double minX, double minY, double minZ
     return lines;
 }
 
-void Drawing3d::createHeart(Qt3DCore::QEntity *parentEntity) {
+QVector<Qt3DCore::QEntity *> Drawing3d::createHeart(Qt3DCore::QEntity *parentEntity, QVector3D pos) {
+    QVector<Qt3DCore::QEntity *> heart;
+
     const int numPoints = 100;
     for (int i = 0; i < numPoints; ++i) {
         double u = (i / (double)(numPoints - 1)) * 2 * M_PI; // u from 0 to 2π
-        for (double v = -1; v <= 1; v += 0.1) { // v from -1 to 1
+        for (int v = -10; v <= 10; v++) { // v from -1 to 1
             double x = 16 * pow(sin(u), 3);
             double y = 13 * cos(u) - 5 * cos(2 * u) - 2 * cos(3 * u) - cos(4 * u);
-            double z = v;
+            double z = (double)v / 10.0;
 
-            // Create a sphere to represent the point
-            Qt3DExtras::QSphereMesh *sphereMesh = new Qt3DExtras::QSphereMesh();
-            sphereMesh->setRadius(0.5f); // Set the radius of the sphere
-
-            Qt3DExtras::QPhongMaterial *material = new Qt3DExtras::QPhongMaterial();
-            material->setDiffuse(QColor(Qt::red));
-
-            Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
-            transform->setTranslation(QVector3D(20 + x, 20 + y, 20 + z));
-
-            Qt3DCore::QEntity *sphereEntity = new Qt3DCore::QEntity(parentEntity);
-            sphereEntity->addComponent(sphereMesh);
-            sphereEntity->addComponent(material);
-            sphereEntity->addComponent(transform);
+            heart.append(this->drawSphere(QVector3D(pos.x() + x, pos.y() + y, pos.z() + z), 0.5f, QColor(Qt::red), parentEntity));
         }
     }
+
+    return heart;
 }
 
-Qt3DCore::QEntity* Drawing3d::_createStar(Qt3DCore::QEntity *parent, const QVector3D &position, float size) {
+Qt3DCore::QEntity* Drawing3d::createStar(Qt3DCore::QEntity *parent, const QVector3D &position, float size) {
     // Create a new star entity
     Qt3DCore::QEntity *starEntity = new Qt3DCore::QEntity(parent);
 
@@ -139,9 +171,9 @@ Qt3DCore::QEntity* Drawing3d::_createStar(Qt3DCore::QEntity *parent, const QVect
     return starEntity;
 }
 
-QVector<Qt3DCore::QEntity*> Drawing3d::_createStarrySky(Qt3DCore::QEntity *rootEntity, int starCount,
-                                                         double minX, double minY, double minZ,
-                                                         double maxX, double maxY, double maxZ)
+QVector<Qt3DCore::QEntity*> Drawing3d::createStarrySky(Qt3DCore::QEntity *rootEntity, int starCount,
+                                                        double minX, double minY, double minZ,
+                                                        double maxX, double maxY, double maxZ)
 {
     QVector<Qt3DCore::QEntity*> stars;
 
@@ -202,24 +234,9 @@ QVector<Qt3DCore::QEntity*> Drawing3d::_createStarrySky(Qt3DCore::QEntity *rootE
             float size = 0.05 + randomValue * (0.2 - 0.05);
 
             // Create the star
-            stars.append(_createStar(rootEntity, position, size));
+            stars.append(createStar(rootEntity, position, size));
         }
     }
+    // emit starsSkyUpdate(stars);
     return stars;
 }
-
-void Drawing3d::createStarrySky(Qt3DCore::QEntity *rootEntity, int starCount,
-                                                        double minX, double minY, double minZ,
-                                                        double maxX, double maxY, double maxZ)
-{
-    // QThread *thread = QThread::create([=] {
-    //     QVector<Qt3DCore::QEntity*> stars = this->_createStarrySky(rootEntity, starCount,
-    //                                 minX, minY, minZ,
-    //                                 maxX, maxY, maxZ);
-    //     emit starsSkyUpdate(stars);
-    // });
-
-    // thread->start();
-}
-
-

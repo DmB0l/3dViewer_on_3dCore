@@ -33,6 +33,14 @@ signals:
     void addCube(double x, double y, double z,
                  double size,
                  QColor color);
+
+    void addSphere(double x, double y, double z,
+                   double radius,
+                   QColor color);
+
+    void addPlane(double x, double y, double z,
+                  double width, double height,
+                  QColor color);
 };
 
 #endif // API_H

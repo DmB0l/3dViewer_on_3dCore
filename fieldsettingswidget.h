@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QSettings>
 
+#include "settings.h"
+
 namespace Ui {
 class FieldSettingsWidget;
 }
@@ -17,16 +19,20 @@ public:
     explicit FieldSettingsWidget(QWidget *parent = nullptr);
     ~FieldSettingsWidget();
 
-    double minX() const;
-    double minY() const;
-    double minZ() const;
-    double maxX() const;
-    double maxY() const;
-    double maxZ() const;
-    uint32_t segmentCountX() const;
-    uint32_t segmentCountY() const;
-    uint32_t segmentCountZ() const;
-    bool isGridHide() const;
+    // double minX() const;
+    // double minY() const;
+    // double minZ() const;
+    // double maxX() const;
+    // double maxY() const;
+    // double maxZ() const;
+    // uint32_t segmentCountX() const;
+    // uint32_t segmentCountY() const;
+    // uint32_t segmentCountZ() const;
+    // bool isGridHide() const;
+    // bool isStarSkyHide() const;
+    // uint32_t starsNumber() const;
+
+    GridSettings settings() const;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -38,13 +44,7 @@ private:
     void loadSettings();
     void updateParameters();
 
-    double m_minX = 0, m_minY = 0, m_minZ = 0;
-    double m_maxX =  20, m_maxY =  20, m_maxZ =  20;
-    uint32_t m_segmentCountX = 1;
-    uint32_t m_segmentCountY = 1;
-    uint32_t m_segmentCountZ = 1;
-
-    bool m_isGridHide = false;
+    GridSettings m_settings;
 
 signals:
     void closeSignal();

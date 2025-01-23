@@ -30,33 +30,19 @@ Custom3dWindow::Custom3dWindow(Qt3DCore::QEntity *root, QScreen *screen, Qt3DRen
     m_cameraController = new Qt3DExtras::QFirstPersonCameraController(root);
     m_cameraController->setCamera(camera);
 
-    m_cameraController->setLinearSpeed(m_linearSpeed);
-    m_cameraController->setLookSpeed(m_LookSpeed);
-
-    // QTimer *timer = new QTimer(this);
-    // connect(timer, &QTimer::timeout, this, [=](){
-    //     // Get the current position and view center of the camera
-    //     QVector3D currentPosition = camera->position();
-    //     QVector3D viewCenter = camera->viewCenter();
-
-    //     // Calculate the rotation quaternion
-    //     QQuaternion rotation = QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 10);
-
-    //     // Rotate the camera's position around the view center
-    //     QVector3D direction = currentPosition - viewCenter; // Get the direction vector
-    //     direction = rotation.rotatedVector(direction); // Rotate the direction vector
-    //     QVector3D newPosition = viewCenter + direction; // Calculate the new position
-
-    //     // Set the new position and keep the view center the same
-    //     camera->setPosition(newPosition);
-    //     camera->setViewCenter(viewCenter); // Ensure the view center remains unchanged
-    // });
-    // timer->start(1000);
-
-    // camera->setViewCenter(camera->position());
+    m_cameraController->setLinearSpeed(m_cameraSettings.linearSpeed);
+    m_cameraController->setLookSpeed(m_cameraSettings.lookSpeed);
 }
 
-void Custom3dWindow::updateField() {
-    // auto fieldSettings = qobject_cast<FieldSettingsWidget*>(sender());
-    // fieldSettings->
+void Custom3dWindow::setCameraSettings(const CameraSettings &newCameraSettings)
+{
+    m_cameraSettings = newCameraSettings;
+
+    m_cameraController->setLinearSpeed(m_cameraSettings.linearSpeed);
+    m_cameraController->setLookSpeed(m_cameraSettings.lookSpeed);
+
+    Qt3DRender::QCamera *camera = this->camera();
+    camera->setFieldOfView(newCameraSettings.fieldOfView);
+    camera->setNearPlane(newCameraSettings.nearPlane);
+    camera->setFarPlane(newCameraSettings.farPlane);
 }

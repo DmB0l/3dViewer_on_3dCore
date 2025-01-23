@@ -51,39 +51,44 @@ void FieldSettingsWidget::showEvent(QShowEvent *event) {
 }
 
 void FieldSettingsWidget::saveSettings() {
-    m_minX = ui->SB_minX->value();
-    m_minY = ui->SB_minY->value();
-    m_minZ = ui->SB_minZ->value();
+    m_settings.minX = ui->SB_minX->value();
+    m_settings.minY = ui->SB_minY->value();
+    m_settings.minZ = ui->SB_minZ->value();
 
-    m_maxX = ui->SB_maxX->value();
-    m_maxY = ui->SB_maxY->value();
-    m_maxZ = ui->SB_maxZ->value();
+    m_settings.maxX = ui->SB_maxX->value();
+    m_settings.maxY = ui->SB_maxY->value();
+    m_settings.maxZ = ui->SB_maxZ->value();
 
-    m_segmentCountX = ui->SB_stepX->value();
-    m_segmentCountY = ui->SB_stepY->value();
-    m_segmentCountZ = ui->SB_stepZ->value();
+    m_settings.segmentCountX = ui->SB_stepX->value();
+    m_settings.segmentCountY = ui->SB_stepY->value();
+    m_settings.segmentCountZ = ui->SB_stepZ->value();
 
-    m_isGridHide = ui->CB_hideGrid->isChecked();
+    m_settings.isGridHide = ui->CB_hideGrid->isChecked();
+    m_settings.isStarSkyHide = ui->CB_hideStarSky->isChecked();
+
+    m_settings.starsNumber = ui->SB_stars->value();
 
     QSettings settings("config.ini", QSettings::IniFormat);
     settings.beginGroup("GRID PARAMETERS");
-    settings.setValue("minX", m_minX);
-    settings.setValue("minY", m_minY);
-    settings.setValue("minZ", m_minZ);
+    settings.setValue("minX", m_settings.minX);
+    settings.setValue("minY", m_settings.minY);
+    settings.setValue("minZ", m_settings.minZ);
 
-    settings.setValue("maxX", m_maxX);
-    settings.setValue("maxY", m_maxY);
-    settings.setValue("maxZ", m_maxZ);
+    settings.setValue("maxX", m_settings.maxX);
+    settings.setValue("maxY", m_settings.maxY);
+    settings.setValue("maxZ", m_settings.maxZ);
     settings.endGroup();
 
     settings.beginGroup("SEGMENT PARAMETERS");
-    settings.setValue("stepX", m_segmentCountX);
-    settings.setValue("stepY", m_segmentCountY);
-    settings.setValue("stepZ", m_segmentCountZ);
+    settings.setValue("stepX", m_settings.segmentCountX);
+    settings.setValue("stepY", m_settings.segmentCountY);
+    settings.setValue("stepZ", m_settings.segmentCountZ);
     settings.endGroup();
 
-    settings.beginGroup("HIDE GRID");
-    settings.setValue("hideGrid", m_isGridHide);
+    settings.beginGroup("OPTIONS");
+    settings.setValue("hideGrid", m_settings.isGridHide);
+    settings.setValue("hideStarSky", m_settings.isStarSkyHide);
+    settings.setValue("starsNumber", m_settings.starsNumber);
     settings.endGroup();
 }
 
@@ -94,88 +99,48 @@ void FieldSettingsWidget::loadSettings() {
     }
     else {
         settings.beginGroup("GRID PARAMETERS");
-        m_minX = settings.value("minX").toDouble();
-        m_minY = settings.value("minY").toDouble();
-        m_minZ = settings.value("minZ").toDouble();
-        m_maxX = settings.value("maxX").toDouble();
-        m_maxY = settings.value("maxY").toDouble();
-        m_maxZ = settings.value("maxZ").toDouble();
+        m_settings.minX = settings.value("minX").toDouble();
+        m_settings.minY = settings.value("minY").toDouble();
+        m_settings.minZ = settings.value("minZ").toDouble();
+        m_settings.maxX = settings.value("maxX").toDouble();
+        m_settings.maxY = settings.value("maxY").toDouble();
+        m_settings.maxZ = settings.value("maxZ").toDouble();
         settings.endGroup();
 
         settings.beginGroup("SEGMENT PARAMETERS");
-        m_segmentCountX = settings.value("stepX").toUInt();
-        m_segmentCountY = settings.value("stepY").toUInt();
-        m_segmentCountZ = settings.value("stepZ").toUInt();
+        m_settings.segmentCountX = settings.value("stepX").toUInt();
+        m_settings.segmentCountY = settings.value("stepY").toUInt();
+        m_settings.segmentCountZ = settings.value("stepZ").toUInt();
         settings.endGroup();
 
-        settings.beginGroup("HIDE GRID");
-        m_isGridHide = settings.value("hideGrid").toBool();
+        settings.beginGroup("OPTIONS");
+        m_settings.isGridHide = settings.value("hideGrid").toBool();
+        m_settings.isStarSkyHide = settings.value("hideStarSky").toBool();
+        m_settings.starsNumber = settings.value("starsNumber").toUInt();
         settings.endGroup();
     }
 }
 
 void FieldSettingsWidget::updateParameters() {
-    ui->SB_minX->setValue(m_minX);
-    ui->SB_minY->setValue(m_minY);
-    ui->SB_minZ->setValue(m_minZ);
+    ui->SB_minX->setValue(m_settings.minX);
+    ui->SB_minY->setValue(m_settings.minY);
+    ui->SB_minZ->setValue(m_settings.minZ);
 
-    ui->SB_maxX->setValue(m_maxX);
-    ui->SB_maxY->setValue(m_maxY);
-    ui->SB_maxZ->setValue(m_maxZ);
+    ui->SB_maxX->setValue(m_settings.maxX);
+    ui->SB_maxY->setValue(m_settings.maxY);
+    ui->SB_maxZ->setValue(m_settings.maxZ);
 
-    ui->SB_stepX->setValue(m_segmentCountX);
-    ui->SB_stepY->setValue(m_segmentCountY);
-    ui->SB_stepZ->setValue(m_segmentCountZ);
+    ui->SB_stepX->setValue(m_settings.segmentCountX);
+    ui->SB_stepY->setValue(m_settings.segmentCountY);
+    ui->SB_stepZ->setValue(m_settings.segmentCountZ);
 
-    ui->CB_hideGrid->setChecked(m_isGridHide);
+    ui->CB_hideGrid->setChecked(m_settings.isGridHide);
+    ui->CB_hideStarSky->setChecked(m_settings.isStarSkyHide);
+
+    ui->SB_stars->setValue(m_settings.starsNumber);
 }
 
-bool FieldSettingsWidget::isGridHide() const
+GridSettings FieldSettingsWidget::settings() const
 {
-    return m_isGridHide;
-}
-
-double FieldSettingsWidget::minX() const
-{
-    return m_minX;
-}
-
-double FieldSettingsWidget::minY() const
-{
-    return m_minY;
-}
-
-double FieldSettingsWidget::minZ() const
-{
-    return m_minZ;
-}
-
-double FieldSettingsWidget::maxX() const
-{
-    return m_maxX;
-}
-
-double FieldSettingsWidget::maxY() const
-{
-    return m_maxY;
-}
-
-double FieldSettingsWidget::maxZ() const
-{
-    return m_maxZ;
-}
-
-uint32_t FieldSettingsWidget::segmentCountX() const
-{
-    return m_segmentCountX;
-}
-
-uint32_t FieldSettingsWidget::segmentCountY() const
-{
-    return m_segmentCountY;
-}
-
-uint32_t FieldSettingsWidget::segmentCountZ() const
-{
-    return m_segmentCountZ;
+    return m_settings;
 }

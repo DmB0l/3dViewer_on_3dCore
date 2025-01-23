@@ -8,11 +8,15 @@
 
 #include <QtMath>
 
+#include "settings.h"
+
 class Custom3dWindow : public Qt3DExtras::Qt3DWindow
 {
     Q_OBJECT
 public:
     Custom3dWindow(Qt3DCore::QEntity *root = nullptr, QScreen *screen = nullptr, Qt3DRender::API = Qt3DRender::API::OpenGL);
+
+    void setCameraSettings(const CameraSettings &newCameraSettings);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override {
@@ -34,16 +38,9 @@ protected:
         // m_cameraController->setLookSpeed(m_LookSpeed);
     }
 
-public slots:
-    void updateField();
-
 private:
     Qt3DExtras::QFirstPersonCameraController *m_cameraController;
-
-    int m_linearSpeed = 10;
-    int m_LookSpeed = 180;
-
-
+    CameraSettings m_cameraSettings;
 };
 
 #endif // CUSTOM3DWINDOW_H

@@ -15,16 +15,22 @@
 #include <Qt3DRender/QBuffer>
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QObjectPicker>
+#include <Qt3DExtras/QText2DEntity>
 
 #include <QSharedPointer>
 #include <QRandomGenerator>
+#include <QLabel>
+#include <QGridLayout>
+#include <QGraphicsView>
+#include <QGraphicsProxyWidget>
 
 #include "custom3dwindow.h"
 #include "lineentity.h"
-#include "linemousehandler.h"
 #include "drawing3d.h"
 #include "fieldsettingswidget.h"
+#include "camerasettingswidget.h"
 #include "api.h"
+#include "customgraphicsview.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,7 +46,9 @@ public:
 
 public slots:
     void updateField();
+    void updateCameraSettings();
     void showGridSettings();
+    void showCameraSettings();
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -50,17 +58,33 @@ private:
     Qt3DCore::QEntity *m_rootEntity;
     API *m_api;
     Drawing3d *m_drawing;
+    Custom3dWindow *m_view;
+    GridSettings m_gridSettings;
+    CameraSettings m_cameraSettings;
+
+    CustomGraphicsView *m_customGraphicsView;
 
     QVector<Qt3DCore::QEntity *> m_viewElements;
     QVector<LineEntity *> m_grid;
     QVector<Qt3DCore::QEntity *> m_starSky;
-    uint32_t m_starsNumber = 1000;
 
     FieldSettingsWidget *m_fieldSettingsWidget = nullptr;
+    CameraSettingsWidget *m_cameraSettingsWidget = nullptr;
+
+    // Надписи для infoWidget
+    QWidget* m_infoWidget = nullptr; // Widget для отображения информации о камере
+    QGridLayout *m_gridLayoutInfoWidget = nullptr; // Layout
+    QLabel *m_labelCameraNumber = nullptr;
+    QLabel *m_labelFps = nullptr;
+    QLabel *m_labelFrameType = nullptr;
+    QLabel *m_labelGetFrames = nullptr;
+    QLabel *m_labelLostFrames = nullptr;
+    QLabel *m_labelResolution = nullptr;
+    QLabel *m_labelSourceType = nullptr;
+    QLabel *m_labelTime = nullptr;
 
     int m_counter = 0;
-    void createStar(Qt3DCore::QEntity *parent, const QVector3D &position, float size);
-    void createStarrySky(Qt3DCore::QEntity *rootEntity, int starCount);
+
 };
 
 #endif // MAINWINDOW_H
