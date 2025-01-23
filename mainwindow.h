@@ -31,6 +31,7 @@
 #include "camerasettingswidget.h"
 #include "api.h"
 #include "customgraphicsview.h"
+#include "view3d.h"
 
 namespace Ui {
 class MainWindow;
@@ -58,7 +59,10 @@ private:
     Qt3DCore::QEntity *m_rootEntity;
     API *m_api;
     Drawing3d *m_drawing;
+
     Custom3dWindow *m_view;
+    View3d *m_qmlView;
+
     GridSettings m_gridSettings;
     CameraSettings m_cameraSettings;
 

@@ -11,24 +11,21 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    m_qmlView = new View3d(ui->quickWidget, this);
+
     // SETTINGS
     m_gridSettings = m_fieldSettingsWidget->settings();
     m_cameraSettings = m_cameraSettingsWidget->cameraSettings();
 
+    m_qmlView->setCameraSettings(m_cameraSettings);
+
     // 3D
-    m_rootEntity = new Qt3DCore::QEntity();
-    m_view = new Custom3dWindow(m_rootEntity);
-    m_view->setCameraSettings(m_cameraSettings);
+    m_rootEntity = m_qmlView->rootEntity();
 
-    // m_customGraphicsView = new CustomGraphicsView(QWidget::createWindowContainer(m_view), this);
-    // ui->L_view->addWidget(m_customGraphicsView);
-
-    QWidget* container = QWidget::createWindowContainer(m_view);
-    ui->W_mainWidget->layout()->addWidget(container);
-    ui->W_mainWidget->layout()->setMargin(0);
-    ui->W_mainWidget->layout()->setSpacing(0);
-    ui->W_mainWidget->layout()->setContentsMargins(0, 0, 0, 0);
-
+    // CENTRAL WIDGET
+    ui->centralwidget->layout()->setMargin(0);
+    ui->centralwidget->layout()->setSpacing(0);
+    ui->centralwidget->layout()->setContentsMargins(0, 0, 0, 0);
 
     // PUSH BUTTONS CONNECTIONS
     connect(ui->PB_grid, &QPushButton::clicked, this, &MainWindow::showGridSettings);
@@ -157,7 +154,7 @@ void MainWindow::updateField() {
 
 void MainWindow::updateCameraSettings() {
     m_cameraSettings = m_cameraSettingsWidget->cameraSettings();
-    m_view->setCameraSettings(m_cameraSettings);
+    m_qmlView->setCameraSettings(m_cameraSettings);
 }
 
 void MainWindow::showGridSettings() {

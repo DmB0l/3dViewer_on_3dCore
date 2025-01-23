@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>View3d.qml</file>
+    </qresource>
+</RCC>
