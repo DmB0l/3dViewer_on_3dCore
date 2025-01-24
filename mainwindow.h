@@ -45,31 +45,32 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-public slots:
+protected:
+    void closeEvent(QCloseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+
+private slots:
+    void onEntityClicked(Qt3DCore::QEntity *entity, QColor color);
     void updateField();
     void updateCameraSettings();
     void showGridSettings();
     void showCameraSettings();
-
-protected:
-    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::MainWindow *ui;
     Qt3DCore::QEntity *m_rootEntity;
     API *m_api;
     Drawing3d *m_drawing;
-
-    Custom3dWindow *m_view;
     View3d *m_qmlView;
+
+    Qt3DCore::QEntity *m_selectedEntity = nullptr;
+    QColor m_prevColorSelectedEntity;
 
     GridSettings m_gridSettings;
     CameraSettings m_cameraSettings;
 
-    CustomGraphicsView *m_customGraphicsView;
-
     QVector<Qt3DCore::QEntity *> m_viewElements;
-    QVector<LineEntity *> m_grid;
+    QVector<Qt3DCore::QEntity *> m_grid;
     QVector<Qt3DCore::QEntity *> m_starSky;
 
     FieldSettingsWidget *m_fieldSettingsWidget = nullptr;
@@ -88,7 +89,6 @@ private:
     QLabel *m_labelTime = nullptr;
 
     int m_counter = 0;
-
 };
 
 #endif // MAINWINDOW_H

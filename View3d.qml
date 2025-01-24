@@ -10,19 +10,17 @@ Item {
     id: rootElement;
     objectName: "rootElement"
 
-
-
-    Timer {
-            id: updateTimer
-            interval: 100 // Интервал в миллисекундах (100 мс = 0.1 секунды)
-            running: true // Таймер запускается автоматически
-            repeat: true // Таймер будет повторяться
-            onTriggered: {
-                // Обновляем текст с текущим значением m_cameraPositionX
-                // cameraPositionText.text = "camera pos x: " + view3dComponent.m_cameraPositionX;
-                // console.log("camera pos x: " + view3dComponent.m_cameraPositionX);
-            }
-        }
+    // Timer {
+    //         id: updateTimer
+    //         interval: 100 // Интервал в миллисекундах (100 мс = 0.1 секунды)
+    //         running: true // Таймер запускается автоматически
+    //         repeat: true // Таймер будет повторяться
+    //         onTriggered: {
+    //             // Обновляем текст с текущим значением m_cameraPositionX
+    //             // cameraPositionText.text = "camera pos x: " + view3dComponent.m_cameraPositionX;
+    //             // console.log("camera pos x: " + view3dComponent.m_cameraPositionX);
+    //         }
+    //     }
 
     Rectangle {
         id: scene
@@ -110,11 +108,14 @@ Item {
             Text {
                 color: parent.textColor;
                 text: "Camera { " +
-                      View3Dcpp.m_cameraPosition.x.toFixed(1) + " " +
-                      View3Dcpp.m_cameraPosition.y.toFixed(1) + " " +
+                      View3Dcpp.m_cameraPosition.x.toFixed(1) + "; " +
+                      View3Dcpp.m_cameraPosition.y.toFixed(1) + "; " +
                       View3Dcpp.m_cameraPosition.z.toFixed(1) + " }";
             }
-            Text { color: parent.textColor; text: "Hello: "}
+            Text {
+                color: parent.textColor;
+                text: View3Dcpp.m_selectedEntityText;
+            }
         }
     }
 

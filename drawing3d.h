@@ -29,7 +29,7 @@ public slots:
 
     Qt3DCore::QEntity* drawCube(QVector3D pos, double size, QColor color, Qt3DCore::QEntity *root);
 
-    QVector<LineEntity *> createGrid(double minX = 0, double minY = 0, double minZ = 0,
+    QVector<Qt3DCore::QEntity *> createGrid(double minX = 0, double minY = 0, double minZ = 0,
                                             double maxX = 20, double maxY = 20, double m_maxZ = 20,
                                             uint32_t segmentCountX = 1,
                                             uint32_t segmentCountY = 1,
@@ -42,10 +42,13 @@ public slots:
                                 double minX, double minY, double minZ,
                                 double maxX, double maxY, double maxZ);
 
-    Qt3DCore::QEntity *drawLine(double x1, double y1, double z1, double x2, double y2, double z2, QColor color, Qt3DCore::QEntity *root);
+    Qt3DCore::QEntity *drawLine(double x1, double y1, double z1, double x2, double y2, double z2, QColor color, QString name, Qt3DCore::QEntity *root);
 
 private:
     Qt3DCore::QEntity* createStar(Qt3DCore::QEntity *parent, const QVector3D &position, float size);
+
+signals:
+    void entityClicked(Qt3DCore::QEntity *entity, QColor prevColor);
 
 };
 

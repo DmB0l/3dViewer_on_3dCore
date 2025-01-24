@@ -21,6 +21,15 @@ Qt3DCore::QEntity* Drawing3d::drawPlane(QVector3D pos, double width, double heig
 
     planeEntity->setObjectName("plane");
 
+    auto *picker = new Qt3DRender::QObjectPicker();
+    picker->setHoverEnabled(true);
+    picker->setEnabled(true);
+    QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
+        planeMaterial->setDiffuse(QColor("yellow"));
+        emit entityClicked(planeEntity, color);
+    });
+    planeEntity->addComponent(picker);
+
     return planeEntity;
 }
 
@@ -44,6 +53,15 @@ Qt3DCore::QEntity* Drawing3d::drawCube(QVector3D pos, double size, QColor color,
 
     cuboidEntity->setObjectName("cube");
 
+    auto *picker = new Qt3DRender::QObjectPicker();
+    picker->setHoverEnabled(true);
+    picker->setEnabled(true);
+    QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
+        cuboidMaterial->setDiffuse(QColor("yellow"));
+        emit entityClicked(cuboidEntity, color);
+    });
+    cuboidEntity->addComponent(picker);
+
     return cuboidEntity;
 }
 
@@ -64,66 +82,147 @@ Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor co
 
     sphereEntity->setObjectName("sphere");
 
+    auto *picker = new Qt3DRender::QObjectPicker();
+    picker->setHoverEnabled(true);
+    picker->setEnabled(true);
+    QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
+        material->setDiffuse(QColor("yellow"));
+        emit entityClicked(sphereEntity, color);
+    });
+    sphereEntity->addComponent(picker);
+
     return sphereEntity;
 }
 
 Qt3DCore::QEntity* Drawing3d::drawLine(double x1, double y1, double z1,
                                        double x2, double y2, double z2,
-                                       QColor color, Qt3DCore::QEntity *root)
+                                       QColor color, QString name,
+                                       Qt3DCore::QEntity *root)
 {
-    return new LineEntity({static_cast<float>(x1), static_cast<float>(y1), static_cast<float>(z1)},
-                          {static_cast<float>(x2), static_cast<float>(y2), static_cast<float>(z2)},
-                          color, "line", root);
+    QVector3D start(x1, y1, z1);
+    QVector3D end(x2, y2, z2);
+
+    auto *geometry = new Qt3DRender::QGeometry(root);
+
+    // position vertices (start and end)
+    QByteArray bufferBytes;
+    bufferBytes.resize(3 * 2 * sizeof(float)); // start.x, start.y, start.end + end.x, end.y, end.z
+    float *positions = reinterpret_cast<float*>(bufferBytes.data());
+    *positions++ = start.x();
+    *positions++ = start.y();
+    *positions++ = start.z();
+    *positions++ = end.x();
+    *positions++ = end.y();
+    *positions++ = end.z();
+
+    auto *buf = new Qt3DRender::QBuffer(geometry);
+    buf->setData(bufferBytes);
+
+    auto *positionAttribute = new Qt3DRender::QAttribute(geometry);
+    positionAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
+    positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::Float);
+    positionAttribute->setVertexSize(3);
+    positionAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+    positionAttribute->setBuffer(buf);
+    positionAttribute->setByteStride(3 * sizeof(float));
+    positionAttribute->setCount(2);
+    geometry->addAttribute(positionAttribute); // We add the vertices in the geometry
+
+    // connectivity between vertices
+    QByteArray indexBytes;
+    indexBytes.resize(2 * sizeof(unsigned int)); // start to end
+    unsigned int *indices = reinterpret_cast<unsigned int*>(indexBytes.data());
+    *indices++ = 0;
+    *indices++ = 1;
+
+    auto *indexBuffer = new Qt3DRender::QBuffer(geometry);
+    indexBuffer->setData(indexBytes);
+
+    auto *indexAttribute = new Qt3DRender::QAttribute(geometry);
+    indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedInt);
+    indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);
+    indexAttribute->setBuffer(indexBuffer);
+    indexAttribute->setCount(2);
+    geometry->addAttribute(indexAttribute); // We add the indices linking the points in the geometry
+
+    // mesh
+    auto *line = new Qt3DRender::QGeometryRenderer(root);
+    line->setGeometry(geometry);
+    line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
+    auto *material = new Qt3DExtras::QPhongMaterial(root);
+    material->setAmbient(color);
+
+    // entity
+    auto *lineEntity = new Qt3DCore::QEntity(root);
+    lineEntity->addComponent(line);
+    lineEntity->addComponent(material);
+
+    lineEntity->setObjectName(name);
+
+    if(name == "line") {
+        auto *picker = new Qt3DRender::QObjectPicker();
+        picker->setHoverEnabled(true);
+        picker->setEnabled(true);
+        QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
+            material->setAmbient(QColor("yellow"));
+            emit entityClicked(lineEntity, color);
+        });
+        lineEntity->addComponent(picker);
+    }
+
+    return lineEntity;
 }
 
-QVector<LineEntity*> Drawing3d::createGrid(double minX, double minY, double minZ,
-                                            double maxX, double maxY, double maxZ,
-                                            uint32_t segmentCountX,
-                                            uint32_t segmentCountY,
-                                            uint32_t segmentCountZ,
-                                            Qt3DCore::QEntity *root)
+QVector<Qt3DCore::QEntity *> Drawing3d::createGrid(double minX, double minY, double minZ,
+                                                   double maxX, double maxY, double maxZ,
+                                                   uint32_t segmentCountX,
+                                                   uint32_t segmentCountY,
+                                                   uint32_t segmentCountZ,
+                                                   Qt3DCore::QEntity *root)
 {
-    QVector<LineEntity*> lines;
+    QVector<Qt3DCore::QEntity *> lines;
 
+    for (float i = minX; i <= maxX; i += segmentCountX) {
+        lines.append(this->drawLine(i, minY, 0,
+                                    i, maxY, 0,
+                                    Qt::red, "X",
+                                    root)
+                     );
 
-    for (float i = minX; i <= maxX; i += segmentCountX /*/ (abs(minX) + abs(maxX))*/) {
-        LineEntity *line1 = new LineEntity({static_cast<float>(i), static_cast<float>(minY), 0},
-                                           {static_cast<float>(i), static_cast<float>(maxY), 0},
-                                           Qt::red, "X", root);
-
-        LineEntity *line2 = new LineEntity({static_cast<float>(i), 0, static_cast<float>(minZ)},
-                                           {static_cast<float>(i), 0, static_cast<float>(maxZ)},
-                                           Qt::green, "Z", root);
-
-        lines.append(line1);
-        lines.append(line2);
+        lines.append(this->drawLine(i, 0, minZ,
+                                    i, 0, maxZ,
+                                    Qt::green, "Z",
+                                    root)
+                     );
     }
 
 
-    for (float i = minY; i <= maxY; i += segmentCountY /*/ (abs(minX) + abs(maxX))*/) {
-        LineEntity *line1 = new LineEntity({static_cast<float>(minX), static_cast<float>(i), 0},
-                                           {static_cast<float>(maxX), static_cast<float>(i), 0},
-                                           Qt::red, "X", root);
+    for (float i = minY; i <= maxY; i += segmentCountY) {
+        lines.append(this->drawLine(minX, i, 0,
+                                    maxX, i, 0,
+                                    Qt::red, "X",
+                                    root)
+                     );
 
-        LineEntity *line2 = new LineEntity({0, static_cast<float>(i), static_cast<float>(minZ)},
-                                           {0, static_cast<float>(i), static_cast<float>(maxZ)},
-                                           Qt::blue, "Y", root);
-
-        lines.append(line1);
-        lines.append(line2);
+        lines.append(this->drawLine(0, i, minZ,
+                                    0, i, maxZ,
+                                    Qt::blue, "Y",
+                                    root)
+                     );
     }
 
-    for (float i = minZ; i <= maxZ; i += segmentCountZ /*/ (abs(minX) + abs(maxX))*/) {
-        LineEntity *line1 = new LineEntity({static_cast<float>(minX), 0, static_cast<float>(i)},
-                                           {static_cast<float>(maxX), 0, static_cast<float>(i)},
-                                           Qt::green, "Z", root);
+    for (float i = minZ; i <= maxZ; i += segmentCountZ) {
+        lines.append(this->drawLine(minX, 0, i,
+                                    maxX, 0, i,
+                                    Qt::green, "Z",
+                                    root)
+                     );
 
-        LineEntity *line2 = new LineEntity({0, static_cast<float>(minY), static_cast<float>(i)},
-                                           {0, static_cast<float>(maxY), static_cast<float>(i)},
-                                           Qt::blue, "Y", root);
-
-        lines.append(line1);
-        lines.append(line2);
+        lines.append(this->drawLine(0, minY, i,
+                                    0, maxY, i,
+                                    Qt::blue, "Y",
+                                    root)
+                     );
     }
 
     return lines;

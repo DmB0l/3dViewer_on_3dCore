@@ -27,6 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->centralwidget->layout()->setSpacing(0);
     ui->centralwidget->layout()->setContentsMargins(0, 0, 0, 0);
 
+    // ENTITYES CLICKED CONNECTION
+    connect(m_drawing, &Drawing3d::entityClicked, this, &MainWindow::onEntityClicked);
+
     // PUSH BUTTONS CONNECTIONS
     connect(ui->PB_grid, &QPushButton::clicked, this, &MainWindow::showGridSettings);
     connect(ui->PB_cameraSettings, &QPushButton::clicked, this, &MainWindow::showCameraSettings);
@@ -39,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_api, &API::addLine, this, [=](double x1, double y1, double z1,
                                             double x2, double y2, double z2,
                                             QColor color){
-        m_drawing->drawLine(x1, y1, z1, x2, y2, z2, color, m_rootEntity);
+        m_drawing->drawLine(x1, y1, z1, x2, y2, z2, color, "line", m_rootEntity);
     });
 
     connect(m_api, &API::addCube, this, [=](double x, double y, double z,
@@ -157,6 +160,21 @@ void MainWindow::updateCameraSettings() {
     m_qmlView->setCameraSettings(m_cameraSettings);
 }
 
+void MainWindow::onEntityClicked(Qt3DCore::QEntity *entity, QColor color){
+    if(m_selectedEntity != nullptr) {
+        m_selectedEntity->componentsOfType<Qt3DExtras::QPhongMaterial>().at(0)->setDiffuse(m_prevColorSelectedEntity);
+    }
+    if(m_selectedEntity != entity) {
+        m_selectedEntity = entity;
+        m_prevColorSelectedEntity = color;
+        m_qmlView->createSelectedEntityText(entity);
+    }
+    else {
+        m_selectedEntity = nullptr;
+        m_qmlView->clearSelectedEntityText();
+    }
+}
+
 void MainWindow::showGridSettings() {
     if(m_fieldSettingsWidget) {
         m_fieldSettingsWidget->setFocus();
@@ -183,8 +201,6 @@ void MainWindow::showCameraSettings() {
     }
 }
 
-
-
 void MainWindow::closeEvent(QCloseEvent *event) {
     if(m_fieldSettingsWidget) {
         m_fieldSettingsWidget->close();
@@ -192,5 +208,16 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
     if(m_cameraSettingsWidget) {
         m_cameraSettingsWidget->close();
+    }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Delete) {
+        if(m_selectedEntity != nullptr) {
+            m_selectedEntity->setEnabled(false);
+            m_selectedEntity->deleteLater();
+            m_selectedEntity = nullptr;
+            m_qmlView->clearSelectedEntityText();
+        }
     }
 }

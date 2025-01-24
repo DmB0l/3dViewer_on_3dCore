@@ -34,13 +34,11 @@ View3d::View3d(QQuickWidget *quickWidget, QObject *parent)
     });
 }
 
-Qt3DCore::QEntity *View3d::rootEntity() const
-{
+Qt3DCore::QEntity *View3d::rootEntity() const {
     return m_rootEntity;
 }
 
-void View3d::setCameraSettings(const CameraSettings &newCameraSettings)
-{
+void View3d::setCameraSettings(const CameraSettings &newCameraSettings) {
     m_cameraSettings = newCameraSettings;
 
     m_cameraController->setLinearSpeed(m_cameraSettings.linearSpeed);
@@ -51,15 +49,59 @@ void View3d::setCameraSettings(const CameraSettings &newCameraSettings)
     m_camera->setFarPlane(newCameraSettings.farPlane);
 }
 
-QVector3D View3d::cameraPosition() const
-{
+void View3d::createSelectedEntityText(Qt3DCore::QEntity *entity) {
+    QString selectedEntityText;
+    if(entity->objectName() == "line") {
+        float *positions = reinterpret_cast<float*>(entity->componentsOfType<Qt3DRender::QGeometryRenderer>().at(0)->geometry()->attributes().at(0)->buffer()->data().data());
+        QVector3D startPosition(*positions, *(positions + 1), *(positions + 2));
+        QVector3D endPosition(*(positions + 3), *(positions + 4), *(positions + 5));
+
+        selectedEntityText.append("Selected ").
+            append(entity->objectName()).append(" start { ").
+            append(QString::number(startPosition.x())).append("; ").
+            append(QString::number(startPosition.y())).append("; ").
+            append(QString::number(startPosition.z())).append(" ").
+            append("}\n").
+            append("                           end  { ").
+            append(QString::number(endPosition.x())).append("; ").
+            append(QString::number(endPosition.y())).append("; ").
+            append(QString::number(endPosition.z())).append(" ").
+            append("}");
+    }
+    else {
+        QVector3D position = entity->componentsOfType<Qt3DCore::QTransform>().at(0)->translation();
+        selectedEntityText.append("Selected ").
+            append(entity->objectName()).append(" { ").
+            append(QString::number(position.x())).append("; ").
+            append(QString::number(position.y())).append("; ").
+            append(QString::number(position.z())).append(" ").
+            append("}");
+    }
+    setSelectedEntityText(selectedEntityText);
+}
+
+void View3d::clearSelectedEntityText() {
+    setSelectedEntityText("");
+}
+
+QVector3D View3d::cameraPosition() const {
     return m_cameraPosition;
 }
 
-void View3d::setCameraPosition(const QVector3D &newCameraPosition)
-{
+void View3d::setCameraPosition(const QVector3D &newCameraPosition) {
     if (m_cameraPosition == newCameraPosition)
         return;
     m_cameraPosition = newCameraPosition;
     emit cameraPositionChanged();
+}
+
+QString View3d::selectedEntityText() const {
+    return m_selectedEntityText;
+}
+
+void View3d::setSelectedEntityText(const QString &newSelectedEntityText) {
+    if (m_selectedEntityText == newSelectedEntityText)
+        return;
+    m_selectedEntityText = newSelectedEntityText;
+    emit selectedEntityTextChanged();
 }
