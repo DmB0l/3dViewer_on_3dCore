@@ -5,16 +5,24 @@ import Qt3D.Core 2.15
 import Qt3D.Input 2.15
 import Qt3D.Extras 2.15
 
-import View3dModule 1.0
 
 Item {
     id: rootElement;
     objectName: "rootElement"
 
-    View3dComponent {
-        id: view3dComponent
-        objectName: "view3dComponent"
-    }
+
+
+    Timer {
+            id: updateTimer
+            interval: 100 // Интервал в миллисекундах (100 мс = 0.1 секунды)
+            running: true // Таймер запускается автоматически
+            repeat: true // Таймер будет повторяться
+            onTriggered: {
+                // Обновляем текст с текущим значением m_cameraPositionX
+                // cameraPositionText.text = "camera pos x: " + view3dComponent.m_cameraPositionX;
+                // console.log("camera pos x: " + view3dComponent.m_cameraPositionX);
+            }
+        }
 
     Rectangle {
         id: scene
@@ -97,16 +105,16 @@ Item {
 
             x: parent.anchors.margins / 2
             y: x
+            spacing: 5
 
-            Text { color: parent.textColor; text: "HELLOW: "}
-            Text { color: parent.textColor; text: "HELLOW: "}
-            Text { color: parent.textColor; text: "HELLOW: "}
-            Text { color: parent.textColor; text: "HELLOW: "}
-            Text { color: parent.textColor; text: "HELLOW: "}
-            Text { color: parent.textColor; text: "HELLOW: "}
-            Text { color: parent.textColor; text: "HELLOW: "}
-            Text { color: parent.textColor; text: "HELLOW: "}
-            Text { color: parent.textColor; text: "HELLOW: "}
+            Text {
+                color: parent.textColor;
+                text: "Camera { " +
+                      View3Dcpp.m_cameraPosition.x.toFixed(1) + " " +
+                      View3Dcpp.m_cameraPosition.y.toFixed(1) + " " +
+                      View3Dcpp.m_cameraPosition.z.toFixed(1) + " }";
+            }
+            Text { color: parent.textColor; text: "Hello: "}
         }
     }
 

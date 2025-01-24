@@ -24,6 +24,14 @@ View3d::View3d(QQuickWidget *quickWidget, QObject *parent)
     m_cameraController = m_rootObject->findChild<Qt3DExtras::QFirstPersonCameraController *>("cameraController");
     m_cameraController->setLinearSpeed(m_cameraSettings.linearSpeed);
     m_cameraController->setLookSpeed(m_cameraSettings.lookSpeed);
+
+    setCameraPosition(m_camera->position());
+
+    connect(m_camera, &Qt3DRender::QCamera::positionChanged, this, [=](const QVector3D &position){
+        setCameraPosition(position);
+        // emit cameraPositionChanged();
+        // qDebug() << m_cameraPositionX;
+    });
 }
 
 Qt3DCore::QEntity *View3d::rootEntity() const
@@ -41,4 +49,17 @@ void View3d::setCameraSettings(const CameraSettings &newCameraSettings)
     m_camera->setFieldOfView(newCameraSettings.fieldOfView);
     m_camera->setNearPlane(newCameraSettings.nearPlane);
     m_camera->setFarPlane(newCameraSettings.farPlane);
+}
+
+QVector3D View3d::cameraPosition() const
+{
+    return m_cameraPosition;
+}
+
+void View3d::setCameraPosition(const QVector3D &newCameraPosition)
+{
+    if (m_cameraPosition == newCameraPosition)
+        return;
+    m_cameraPosition = newCameraPosition;
+    emit cameraPositionChanged();
 }

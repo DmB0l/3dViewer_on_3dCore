@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     qRegisterMetaType<QVector<Qt3DCore::QEntity*>>("QVector<Qt3DCore::QEntity*>");
-    qmlRegisterType<View3d>("View3dModule", 1, 0, "View3dComponent");
+    // qmlRegisterType<View3d>("View3dModule", 1, 0, "View3dComponent");
 
     MainWindow mainWindow;
     mainWindow.show();
