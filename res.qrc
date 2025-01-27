@@ -2,4 +2,7 @@
     <qresource prefix="/qml">
         <file>View3d.qml</file>
     </qresource>
+    <qresource prefix="/ico">
+        <file>ico/editIco.png</file>
+    </qresource>
 </RCC>

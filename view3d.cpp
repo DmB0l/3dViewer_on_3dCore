@@ -105,3 +105,20 @@ void View3d::setSelectedEntityText(const QString &newSelectedEntityText) {
     m_selectedEntityText = newSelectedEntityText;
     emit selectedEntityTextChanged();
 }
+
+QString View3d::portText() const
+{
+    return m_portText;
+}
+
+void View3d::setPortText(const QString &newPortText)
+{
+    if (m_portText == newPortText)
+        return;
+    m_portText = newPortText;
+    emit portTextChanged();
+}
+
+// void View3d::updatePort(QString port) {
+//     emit
+// }

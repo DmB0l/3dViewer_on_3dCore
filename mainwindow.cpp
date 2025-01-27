@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_cameraSettings = m_cameraSettingsWidget->cameraSettings();
 
     m_qmlView->setCameraSettings(m_cameraSettings);
+    m_qmlView->setPortText(QString::number(m_api->listenPort()));
 
     // 3D
     m_rootEntity = m_qmlView->rootEntity();
@@ -37,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent)
     // UPDATE SETTINGS CONNECTIONS
     connect(m_fieldSettingsWidget, &FieldSettingsWidget::updateFieldSignal, this, &MainWindow::updateField);
     connect(m_cameraSettingsWidget, &CameraSettingsWidget::updateCameraSettings, this, &MainWindow::updateCameraSettings);
+    connect(m_qmlView, &View3d::updatePortSettings, this, [=](QString port){
+        m_api->setListenPort(port.toInt());
+    });
 
     //API CONNECTIONS
     connect(m_api, &API::addLine, this, [=](double x1, double y1, double z1,

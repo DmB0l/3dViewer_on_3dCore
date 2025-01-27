@@ -4,8 +4,8 @@ API::API(QObject *parent)
     : QObject{parent},
     m_listenSocket(new QUdpSocket)
 {
-    m_listenSocket->bind(QHostAddress(m_listenIp), m_listenPort);
-    connect(m_listenSocket, &QUdpSocket::readyRead, this, &API::readPendingDatagrams);
+    loadSettings();
+    updateBindSocket();
 }
 
 void API::readPendingDatagrams()
@@ -173,3 +173,52 @@ void API::readPendingDatagrams()
         qDebug() << "Не хватает аргументов:";
     }
 }
+
+void API::saveSettings() {
+    QSettings settings("config.ini", QSettings::IniFormat);
+    settings.beginGroup("API PARAMETERS");
+    settings.setValue("port", m_listenPort);
+    settings.endGroup();
+}
+
+void API::loadSettings() {
+    QSettings settings("config.ini", QSettings::IniFormat);
+    if(!settings.childGroups().contains("API PARAMETERS")) {
+        saveSettings();
+    }
+    else {
+        settings.beginGroup("API PARAMETERS");
+        m_listenPort = settings.value("port").toInt();
+        settings.endGroup();
+    }
+}
+
+void API::updateBindSocket() {
+    if (m_listenSocket->state() != QAbstractSocket::UnconnectedState) {
+        m_listenSocket->abort(); // Use abort() instead of close() for immediate disconnection
+    }
+
+    // Wait until the socket is in the UnconnectedState
+    // while (m_listenSocket->state() != QAbstractSocket::UnconnectedState) {
+    //     QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents); // Process events to allow the socket to change state
+    //     QThread::msleep(10); // Sleep for a short time to avoid busy-waiting
+    // }
+
+    qDebug() << "new port: " << m_listenPort;
+    m_listenSocket->bind(QHostAddress::Any, m_listenPort);
+    connect(m_listenSocket, &QUdpSocket::readyRead, this, &API::readPendingDatagrams);
+}
+
+int API::listenPort() const
+{
+    return m_listenPort;
+}
+
+void API::setListenPort(const int &newListenPort)
+{
+    m_listenPort = newListenPort;
+    updateBindSocket();
+    saveSettings();
+}
+
+

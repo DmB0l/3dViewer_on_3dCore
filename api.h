@@ -9,6 +9,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include <QSettings>
+
 #include <QColor>
 
 class API : public QObject
@@ -17,13 +19,20 @@ class API : public QObject
 public:
     explicit API(QObject *parent = nullptr);
 
+    int listenPort() const;
+
 public slots:
     void readPendingDatagrams();
+    void setListenPort(const int &newListenPort);
+
 private:
+    void updateBindSocket();
+    void saveSettings();
+    void loadSettings();
 
     QUdpSocket *m_listenSocket;
     int m_listenPort = 5831;
-    QString m_listenIp = "127.0.0.1";
+    // QString m_listenIp = "127.0.0.1";
 
 signals:
     void addLine(double x1, double y1, double z1,

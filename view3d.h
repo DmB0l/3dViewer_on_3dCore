@@ -22,6 +22,7 @@ class View3d : public QObject
     // Q_PROPERTY(double m_cameraPositionX READ getCameraPositionX WRITE setCameraPositionX NOTIFY cameraPositionChanged)
     Q_PROPERTY(QVector3D m_cameraPosition READ cameraPosition WRITE setCameraPosition NOTIFY cameraPositionChanged FINAL)
     Q_PROPERTY(QString m_selectedEntityText READ selectedEntityText WRITE setSelectedEntityText NOTIFY selectedEntityTextChanged FINAL)
+    Q_PROPERTY(QString m_portText READ portText WRITE setPortText NOTIFY portTextChanged FINAL)
 
 public:
     View3d(QQuickWidget *quickWidget, QObject *parent = nullptr);
@@ -38,10 +39,20 @@ public:
     void setCameraPosition(const QVector3D &newCameraPosition);
     QString selectedEntityText() const;
     void setSelectedEntityText(const QString &newSelectedEntityText);
+    QString portText() const;
+    void setPortText(const QString &newPortText);
+
+    // Q_INVOKABLE
+        // void updatePort(QString port);
 
 signals:
+    //QML
     void cameraPositionChanged();
     void selectedEntityTextChanged();
+    void portTextChanged();
+
+    //QT
+    void updatePortSettings(QString port);
 
 private:
     QQuickWidget *m_quickWidget;
@@ -55,6 +66,7 @@ private:
     // double m_cameraPositionX = 0;
     QVector3D m_cameraPosition;
     QString m_selectedEntityText;
+    QString m_portText;
 };
 
 #endif // VIEW3D_H

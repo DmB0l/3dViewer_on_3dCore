@@ -94,7 +94,9 @@ void FieldSettingsWidget::saveSettings() {
 
 void FieldSettingsWidget::loadSettings() {
     QSettings settings("config.ini", QSettings::IniFormat);
-    if(settings.childGroups().isEmpty()) {
+    if(!settings.childGroups().contains("GRID PARAMETERS") ||
+        !settings.childGroups().contains("SEGMENT PARAMETERS") ||
+        !settings.childGroups().contains("OPTIONS")) {
         saveSettings();
     }
     else {
