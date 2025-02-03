@@ -46,25 +46,35 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_api, &API::addLine, this, [=](double x1, double y1, double z1,
                                             double x2, double y2, double z2,
                                             QColor color){
-        m_drawing->drawLine(x1, y1, z1, x2, y2, z2, color, "line", m_rootEntity);
+        m_viewElements.append(m_drawing->drawLine(x1, y1, z1, x2, y2, z2, color, "line", m_rootEntity));
     });
 
     connect(m_api, &API::addCube, this, [=](double x, double y, double z,
                                             double size,
                                             QColor color){
-        m_drawing->drawCube(QVector3D(x, y, z), size, color, m_rootEntity);
+        m_viewElements.append(m_drawing->drawCube(QVector3D(x, y, z), size, color, m_rootEntity));
     });
 
     connect(m_api, &API::addSphere, this, [=](double x, double y, double z,
                                               double radius,
                                               QColor color){
-        m_drawing->drawSphere(QVector3D(x, y, z), radius, color, m_rootEntity);
+        m_viewElements.append(m_drawing->drawSphere(QVector3D(x, y, z), radius, color, m_rootEntity));
     });
 
     connect(m_api, &API::addPlane, this, [=](double x, double y, double z,
                                              double width, double height,
                                              QColor color){
-        m_drawing->drawPlane(QVector3D(x, y, z), width, height, color, m_rootEntity);
+        m_viewElements.append(m_drawing->drawPlane(QVector3D(x, y, z), width, height, color, m_rootEntity));
+    });
+
+    connect(m_api, &API::clearAll, this, [=](){
+        if(m_viewElements.size() != 0) {
+            for(int i = 0; i < m_viewElements.size(); i++) {
+                m_viewElements.at(i)->setEnabled(false);
+                m_viewElements.at(i)->deleteLater();
+            }
+            m_viewElements.clear();
+        }
     });
 
 
@@ -98,12 +108,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     //CUBES
     for(int i = 0; i < 20; i++) {
-        Qt3DCore::QEntity *entity = m_drawing->drawCube(QVector3D(i + 0.5, 0.5, i + 0.5), 1.0f, QColor(QRgb(0x665423)), m_rootEntity);
-        m_viewElements.append(entity);
+        m_viewElements.append(m_drawing->drawCube(QVector3D(i + 0.5, 0.5, i + 0.5), 1.0f, QColor(QRgb(0x665423)), m_rootEntity));
     }
+
+
+
 
     //HEART
     // m_drawing->createHeart(m_rootEntity, QVector3D(20, 20, 20));
+
+
+    //OBJ
+    m_viewElements.append(m_drawing->drawObj("file:///home/user061/projects/3dViewer_on_3dCore/res/cow-nonormals.obj", QVector3D(50,3.5,50), QColor("blue"), m_rootEntity));
+    m_viewElements.append(m_drawing->drawObj("qrc:/res/drone_model.obj", QVector3D(20,20,20), QColor("white"), m_rootEntity));
 }
 
 MainWindow::~MainWindow()
@@ -166,7 +183,7 @@ void MainWindow::updateCameraSettings() {
 
 void MainWindow::onEntityClicked(Qt3DCore::QEntity *entity, QColor color){
     if(m_selectedEntity != nullptr) {
-        m_selectedEntity->componentsOfType<Qt3DExtras::QPhongMaterial>().at(0)->setDiffuse(m_prevColorSelectedEntity);
+        m_selectedEntity->componentsOfType<Qt3DExtras::QPhongMaterial>().at(0)->setAmbient(m_prevColorSelectedEntity);
     }
     if(m_selectedEntity != entity) {
         m_selectedEntity = entity;

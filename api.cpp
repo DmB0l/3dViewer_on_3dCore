@@ -165,6 +165,9 @@ void API::readPendingDatagrams()
 
             emit addPlane(x, y, z, width, height, QColor(color));
         }
+        else if(type == "clearAll") {
+            emit clearAll();
+        }
         else {
             qDebug() << "Неизвестный тип сообщения:" << type;
         }

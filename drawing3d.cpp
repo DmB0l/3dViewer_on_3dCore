@@ -11,10 +11,11 @@ Qt3DCore::QEntity* Drawing3d::drawPlane(QVector3D pos, double width, double heig
     auto *planeTransform = new Qt3DCore::QTransform();
     planeTransform->setTranslation(pos);
 
-    auto *planeMaterial = new Qt3DExtras::QPhongMaterial(root);
-    planeMaterial->setDiffuse(color);
+    auto *planeMaterial = new Qt3DExtras::QPhongMaterial();
+    // planeMaterial->setDiffuse(color);
+    planeMaterial->setAmbient(color);
 
-    Qt3DCore::QEntity *planeEntity = new Qt3DCore::QEntity(root);
+    Qt3DCore::QEntity *planeEntity = new Qt3DCore::QEntity();
     planeEntity->addComponent(planeMaterial);
     planeEntity->addComponent(planeMesh);
     planeEntity->addComponent(planeTransform);
@@ -25,7 +26,7 @@ Qt3DCore::QEntity* Drawing3d::drawPlane(QVector3D pos, double width, double heig
     picker->setHoverEnabled(true);
     picker->setEnabled(true);
     QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
-        planeMaterial->setDiffuse(QColor("yellow"));
+        planeMaterial->setAmbient(QColor("yellow"));
         emit entityClicked(planeEntity, color);
     });
     planeEntity->addComponent(picker);
@@ -43,7 +44,8 @@ Qt3DCore::QEntity* Drawing3d::drawCube(QVector3D pos, double size, QColor color,
 
     Qt3DExtras::QPhongMaterial *cuboidMaterial = new Qt3DExtras::QPhongMaterial();
     // cuboidMaterial->setDiffuse(QColor(QRgb(0x665423)));
-    cuboidMaterial->setDiffuse(color);
+    // cuboidMaterial->setDiffuse(color);
+    cuboidMaterial->setAmbient(color);
 
     //Cuboid
     Qt3DCore::QEntity *cuboidEntity = new Qt3DCore::QEntity(root);
@@ -57,7 +59,7 @@ Qt3DCore::QEntity* Drawing3d::drawCube(QVector3D pos, double size, QColor color,
     picker->setHoverEnabled(true);
     picker->setEnabled(true);
     QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
-        cuboidMaterial->setDiffuse(QColor("yellow"));
+        cuboidMaterial->setAmbient(QColor("yellow"));
         emit entityClicked(cuboidEntity, color);
     });
     cuboidEntity->addComponent(picker);
@@ -70,7 +72,8 @@ Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor co
     sphereMesh->setRadius(radius);
 
     Qt3DExtras::QPhongMaterial *material = new Qt3DExtras::QPhongMaterial();
-    material->setDiffuse(color);
+    // material->setDiffuse(color);
+    material->setAmbient(color);
 
     Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
     transform->setTranslation(pos);
@@ -86,12 +89,49 @@ Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor co
     picker->setHoverEnabled(true);
     picker->setEnabled(true);
     QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
-        material->setDiffuse(QColor("yellow"));
+        material->setAmbient(QColor("yellow"));
         emit entityClicked(sphereEntity, color);
     });
     sphereEntity->addComponent(picker);
 
     return sphereEntity;
+}
+
+Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor color, Qt3DCore::QEntity *root) {
+    // Загружаем меш из файла .obj
+    Qt3DRender::QMesh *objMesh = new Qt3DRender::QMesh();
+    const QUrl url = QUrl(filePath);
+
+    objMesh->setSource(url);
+
+    // Создаем материал для объекта
+    Qt3DExtras::QPhongMaterial *objMaterial = new Qt3DExtras::QPhongMaterial();
+    // objMaterial->setDiffuse(color);
+    objMaterial->setAmbient(color);
+
+    // Создаем трансформацию для объекта
+    Qt3DCore::QTransform *objTransform = new Qt3DCore::QTransform();
+    objTransform->setScale(1.0f);
+    objTransform->setTranslation(pos);
+
+    Qt3DCore::QEntity *objEntity = new Qt3DCore::QEntity(root);
+
+    objEntity->addComponent(objMesh);
+    objEntity->addComponent(objMaterial);
+    objEntity->addComponent(objTransform);
+
+    objEntity->setObjectName("obj");
+
+    auto *picker = new Qt3DRender::QObjectPicker();
+    picker->setHoverEnabled(true);
+    picker->setEnabled(true);
+    QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
+        objMaterial->setAmbient(QColor("yellow"));
+        emit entityClicked(objEntity, color);
+    });
+    objEntity->addComponent(picker);
+
+    return objEntity;
 }
 
 Qt3DCore::QEntity* Drawing3d::drawLine(double x1, double y1, double z1,

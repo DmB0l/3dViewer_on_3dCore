@@ -12,7 +12,7 @@ Custom3dWindow::Custom3dWindow(Qt3DCore::QEntity *root, QScreen *screen, Qt3DRen
     this->renderSettings()->pickingSettings()->
         setFaceOrientationPickingMode(Qt3DRender::QPickingSettings::FrontAndBackFace);
     this->renderSettings()->pickingSettings()->
-        setPickMethod(Qt3DRender::QPickingSettings::LinePicking);
+        setPickMethod(Qt3DRender::QPickingSettings::PointPicking);
     this->renderSettings()->pickingSettings()->
         setPickResultMode(Qt3DRender::QPickingSettings::NearestPick);
     this->renderSettings()->pickingSettings()->

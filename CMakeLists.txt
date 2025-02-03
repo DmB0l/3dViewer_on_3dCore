@@ -22,8 +22,6 @@ find_package(Qt5 REQUIRED COMPONENTS
     QuickWidgets
     Qml
     Quick
-    3DExtras
-    3DInput
     Gui
     Network
     3DCore
@@ -43,8 +41,6 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::QuickWidgets
     Qt5::Qml
     Qt5::Quick
-    Qt5::3DExtras
-    Qt5::3DInput
     Qt5::Gui
     Qt5::Network
     Qt5::3DCore

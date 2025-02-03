@@ -29,9 +29,10 @@ View3d::View3d(QQuickWidget *quickWidget, QObject *parent)
 
     connect(m_camera, &Qt3DRender::QCamera::positionChanged, this, [=](const QVector3D &position){
         setCameraPosition(position);
-        // emit cameraPositionChanged();
-        // qDebug() << m_cameraPositionX;
     });
+
+    // m_rootEntity->componentsOfType<Qt3DRender::QRenderSettings>().at(0)->activeFrameGraph()->setProperty("clearColor", QColor(210, 210, 220));
+    // m_rootEntity->setClearColor(QColor(210, 210, 220));
 }
 
 Qt3DCore::QEntity *View3d::rootEntity() const {

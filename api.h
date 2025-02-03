@@ -50,6 +50,8 @@ signals:
     void addPlane(double x, double y, double z,
                   double width, double height,
                   QColor color);
+
+    void clearAll();
 };
 
 #endif // API_H

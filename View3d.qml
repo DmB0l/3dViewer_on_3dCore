@@ -42,6 +42,8 @@ Item {
             origin.y: scene.height
         }
 
+
+
         Scene3D {
             id: scene3d
             objectName: "scene3d"
@@ -64,7 +66,6 @@ Item {
                 FirstPersonCameraController {
                     id: cameraController
                     objectName: "cameraController"
-
                     camera: camera
                 }
 
@@ -74,15 +75,17 @@ Item {
                             clearColor: "black"
                             camera: camera
                         }
+
+                        // Добавляем PickingSettings
+                        pickingSettings.pickMethod: PickingSettings.TrianglePicking
+                        pickingSettings.pickResultMode: PickingSettings.NearestPick
+                        pickingSettings.faceOrientationPickingMode: PickingSettings.FrontAndBackFace
                     },
+
                     // Event Source will be set by the Qt3DQuickWindow
                     InputSettings { }
                 ]
             }
-
-            // AnimatedEntity {
-            //     id: rootEntity
-            // }
         }
     }
 

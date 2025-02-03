@@ -5,4 +5,7 @@
     <qresource prefix="/ico">
         <file>ico/editIco.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>res/drone_model.obj</file>
+    </qresource>
 </RCC>
