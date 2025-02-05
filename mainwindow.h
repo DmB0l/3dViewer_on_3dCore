@@ -61,6 +61,9 @@ private slots:
     void showCameraSettings();
     void showColorSettings();
 
+signals:
+    void addExplosion(QVector3D pos);
+
 private:
     Ui::MainWindow *ui;
     Qt3DCore::QEntity *m_rootEntity;
@@ -74,7 +77,7 @@ private:
     GridSettings m_gridSettings;
     CameraSettings m_cameraSettings;
 
-    QVector<Qt3DCore::QEntity *> m_viewElements;
+    QList<Qt3DCore::QEntity *> m_viewElements;
     QVector<Qt3DCore::QEntity *> m_grid;
     QVector<Qt3DCore::QEntity *> m_starSky;
 
@@ -95,6 +98,13 @@ private:
     QLabel *m_labelTime = nullptr;
 
     QRandomGenerator *m_gen = QRandomGenerator::global();
+
+    QMutex *m_mutex;
+    QThread *m_thread;
+    bool m_isThreadWork = true;
+
+
+
 };
 
 #endif // MAINWINDOW_H
