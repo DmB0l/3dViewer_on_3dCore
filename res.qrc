@@ -4,6 +4,9 @@
     </qresource>
     <qresource prefix="/ico">
         <file>ico/editIco.png</file>
+        <file>ico/paletteIco.png</file>
+        <file>ico/cameraIco.png</file>
+        <file>ico/gridIco.png</file>
     </qresource>
     <qresource prefix="/">
         <file>res/drone_model.obj</file>

@@ -39,6 +39,11 @@ Qt3DCore::QEntity *View3d::rootEntity() const {
     return m_rootEntity;
 }
 
+void View3d::setColorSettings(const QColor &color) {
+    m_backgroundColor = color;
+    m_rootEntity->componentsOfType<Qt3DRender::QRenderSettings>().at(0)->activeFrameGraph()->setProperty("clearColor", m_backgroundColor);
+}
+
 void View3d::setCameraSettings(const CameraSettings &newCameraSettings) {
     m_cameraSettings = newCameraSettings;
 

@@ -30,7 +30,7 @@ public slots:
 
     Qt3DCore::QEntity* drawCube(QVector3D pos, double size, QColor color, Qt3DCore::QEntity *root);
 
-    Qt3DCore::QEntity *drawObj(QString filePath, QVector3D pos, QColor color, Qt3DCore::QEntity *root);
+    Qt3DCore::QEntity *drawObj(QString filePath, QVector3D pos, QColor color, double scale, Qt3DCore::QEntity *root);
 
     QVector<Qt3DCore::QEntity *> createGrid(double minX = 0, double minY = 0, double minZ = 0,
                                             double maxX = 20, double maxY = 20, double m_maxZ = 20,

@@ -16,6 +16,7 @@
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QObjectPicker>
 #include <Qt3DExtras/QText2DEntity>
+#include <Qt3DAnimation>
 
 #include <QSharedPointer>
 #include <QRandomGenerator>
@@ -29,9 +30,11 @@
 #include "drawing3d.h"
 #include "fieldsettingswidget.h"
 #include "camerasettingswidget.h"
+#include "colorsettingswidget.h"
 #include "api.h"
 #include "customgraphicsview.h"
 #include "view3d.h"
+#include "explosioneffect.h"
 
 namespace Ui {
 class MainWindow;
@@ -53,8 +56,10 @@ private slots:
     void onEntityClicked(Qt3DCore::QEntity *entity, QColor color);
     void updateField();
     void updateCameraSettings();
+    void updateColorSettings();
     void showGridSettings();
     void showCameraSettings();
+    void showColorSettings();
 
 private:
     Ui::MainWindow *ui;
@@ -75,6 +80,7 @@ private:
 
     FieldSettingsWidget *m_fieldSettingsWidget = nullptr;
     CameraSettingsWidget *m_cameraSettingsWidget = nullptr;
+    ColorSettingsWidget *m_colorSettingsWidget = nullptr;
 
     // Надписи для infoWidget
     QWidget* m_infoWidget = nullptr; // Widget для отображения информации о камере
@@ -88,7 +94,7 @@ private:
     QLabel *m_labelSourceType = nullptr;
     QLabel *m_labelTime = nullptr;
 
-    int m_counter = 0;
+    QRandomGenerator *m_gen = QRandomGenerator::global();
 };
 
 #endif // MAINWINDOW_H

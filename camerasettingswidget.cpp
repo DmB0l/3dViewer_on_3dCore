@@ -6,7 +6,7 @@ CameraSettingsWidget::CameraSettingsWidget(QWidget *parent)
     , ui(new Ui::CameraSettingsWidget)
 {
     ui->setupUi(this);
-    this->setWindowTitle("Grid settings");
+    this->setWindowTitle("Camera settings");
 
     loadSettings();
 

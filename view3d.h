@@ -31,6 +31,7 @@ public:
     Qt3DCore::QEntity *rootEntity() const;
 
     void setCameraSettings(const CameraSettings &newCameraSettings);
+    void setColorSettings(const QColor &color);
 
     void createSelectedEntityText(Qt3DCore::QEntity *entity);
     void clearSelectedEntityText();
@@ -44,6 +45,7 @@ public:
 
     // Q_INVOKABLE
         // void updatePort(QString port);
+
 
 signals:
     //QML
@@ -67,6 +69,8 @@ private:
     QVector3D m_cameraPosition;
     QString m_selectedEntityText;
     QString m_portText;
+
+    QColor m_backgroundColor;
 };
 
 #endif // VIEW3D_H

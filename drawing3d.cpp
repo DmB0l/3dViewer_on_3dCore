@@ -97,7 +97,7 @@ Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor co
     return sphereEntity;
 }
 
-Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor color, Qt3DCore::QEntity *root) {
+Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor color, double scale, Qt3DCore::QEntity *root) {
     // Загружаем меш из файла .obj
     Qt3DRender::QMesh *objMesh = new Qt3DRender::QMesh();
     const QUrl url = QUrl(filePath);
@@ -111,7 +111,7 @@ Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor co
 
     // Создаем трансформацию для объекта
     Qt3DCore::QTransform *objTransform = new Qt3DCore::QTransform();
-    objTransform->setScale(1.0f);
+    objTransform->setScale(scale);
     objTransform->setTranslation(pos);
 
     Qt3DCore::QEntity *objEntity = new Qt3DCore::QEntity(root);
