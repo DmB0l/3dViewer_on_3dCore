@@ -23,7 +23,10 @@ class Drawing3d : public QObject
 public:
     Drawing3d(QObject *parent = nullptr);
 
+    void drawSceneLoader(QVector3D pos, Qt3DCore::QEntity *root);
 public slots:
+    Qt3DCore::QEntity *drawTexture(QVector3D pos, Qt3DCore::QEntity *root);
+
     Qt3DCore::QEntity *drawPlane(QVector3D pos, double width, double height, QColor color, Qt3DCore::QEntity *root);
 
     Qt3DCore::QEntity* drawSphere(QVector3D pos, double radius, QColor color, Qt3DCore::QEntity *root);

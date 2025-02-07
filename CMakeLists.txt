@@ -29,6 +29,7 @@ find_package(Qt5 REQUIRED COMPONENTS
     3DInput
     3DExtras
     3DAnimation
+    3DLogic
 )
 
 add_executable(${PROJECT_NAME}
@@ -48,6 +49,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::3DRender
     Qt5::3DInput
     Qt5::3DExtras
+    Qt5::3DLogic
     Qt5::3DAnimation
 )
 

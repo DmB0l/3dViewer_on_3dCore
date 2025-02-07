@@ -99,8 +99,8 @@ private:
 
     QRandomGenerator *m_gen = QRandomGenerator::global();
 
-    QMutex *m_mutex;
-    QThread *m_thread;
+    QMutex *m_mutex = nullptr;
+    QThread *m_thread = nullptr;
     bool m_isThreadWork = true;
 
 

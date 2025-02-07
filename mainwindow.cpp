@@ -117,6 +117,16 @@ MainWindow::MainWindow(QWidget *parent)
     //     m_viewElements.append(m_drawing->drawCube(QVector3D(i + 0.5, 0.5, i + 0.5), 1.0f, QColor(QRgb(0x665423)), m_rootEntity));
     // }
 
+    //TEXTURE
+    for(int i = 0; i < 1; i++) {
+        m_viewElements.append(m_drawing->drawTexture(QVector3D(13.5, 0.5, 13.5), m_rootEntity));
+    }
+
+
+    // m_drawing->drawSceneLoader(QVector3D(13.5, 0.5, 13.5), m_rootEntity);
+
+
+
 
 
 
@@ -228,7 +238,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         double size = m_gen->bounded(0, 3);
 
-        Qt3DCore::QEntity *cawHell = m_drawing->drawObj("file:///home/user061/projects/3dViewer_on_3dCore/res/cow-nonormals.obj",
+        Qt3DCore::QEntity *cawHell = m_drawing->drawObj("qrc:/res/cow-nonormals.obj",
                                                         QVector3D(coordX, coordY, coordZ),
                                                         QColor(r, g, b),
                                                         size,
@@ -241,6 +251,28 @@ MainWindow::MainWindow(QWidget *parent)
         int endZ = m_gen->bounded(-50, 50);
 
         int timeAnimation = m_gen->bounded(1000, 30000);
+
+        // transformCaw->setRotation()
+            // QQuaternion
+
+        // Анимация вращения
+        int axi = m_gen->bounded(0, 3);
+        switch (axi) {
+        case 0:
+
+            break;
+        default:
+            break;
+        }
+
+        QPropertyAnimation *rotationAnimationCaw = new QPropertyAnimation(transformCaw);
+        rotationAnimationCaw->setTargetObject(transformCaw);
+        rotationAnimationCaw->setPropertyName("rotation");
+        rotationAnimationCaw->setStartValue(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 0));
+        rotationAnimationCaw->setEndValue(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 360));
+        rotationAnimationCaw->setDuration(10000); // 5 секунд
+        rotationAnimationCaw->setLoopCount(-1); // Бесконечная анимация
+        rotationAnimationCaw->start();
 
         // Анимация передвижения
         QPropertyAnimation *moveAnimationCaw = new QPropertyAnimation(transformCaw);
@@ -256,87 +288,12 @@ MainWindow::MainWindow(QWidget *parent)
         m_viewElements.append(cawHell);
         // }
     });
-    timerHell->start(1000);
-
-
+    timerHell->start(100);
 
     m_thread = new QThread();
     m_thread->setObjectName("collision thread");
 
     connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
-
-    // QObject::connect(m_thread, &QThread::started, this, [=]() {
-    //     while (m_isThreadWork) {
-    //         QMutexLocker locker(m_mutex);
-
-    //         auto it1 = m_viewElements.begin();
-    //         QList<Qt3DCore::QEntity *> tempList;
-
-    //         while (it1 != m_viewElements.end()) {
-    //             bool flag = true; // Assume no collision initially
-
-    //             if(it1 != m_viewElements.end()) {
-    //                 auto it2 = m_viewElements.begin();
-    //                 while (it2 != m_viewElements.end()) {
-    //                     if (*it1 != *it2) {
-    //                         if (!((*it1)->componentsOfType<Qt3DCore::QTransform>().empty() &&
-    //                               (*it2)->componentsOfType<Qt3DCore::QTransform>().empty()))
-    //                         {
-    //                             QVector3D pos1 = (*it1)->componentsOfType<Qt3DCore::QTransform>().at(0)->translation();
-    //                             QVector3D pos2 = (*it2)->componentsOfType<Qt3DCore::QTransform>().at(0)->translation();
-
-    //                             if ((pos1 - pos2).length() < 3.0f) {
-    //                                 // Handle collision
-    //                                 (*it1)->setEnabled(false);
-    //                                 (*it2)->setEnabled(false);
-
-    //                                 // (*it1)->deleteLater();
-    //                                 // (*it2)->deleteLater();
-
-    //                                 // qDebug() << "delete" << pos1 << pos2;
-    //                                 // qDebug() << "delete" << *it1 << *it2;
-
-
-
-    //                                 // Erase elements and update iterators
-    //                                 tempList.append(*it1);
-    //                                 tempList.append(*it2);
-
-    //                                 ++it1;
-    //                                 it2 = m_viewElements.begin();
-    //                                 // it1 = m_viewElements.erase(it1); // it1 now points to the next element
-    //                                 // it2 = m_viewElements.erase(it2); // it2 now points to the next element
-
-    //                                 flag = false; // Collision detected, skip incrementing it1
-    //                                 break; // Exit the inner loop
-    //                             } else {
-    //                                 ++it2; // No collision, move to the next element
-    //                             }
-    //                         } else {
-    //                             ++it2; // Skip elements without transforms
-    //                         }
-    //                     } else {
-    //                         ++it2; // Skip the same element
-    //                     }
-    //                 }
-
-    //                 if (flag) {
-    //                     ++it1; // Only increment it1 if no collision was detected
-    //                 }
-    //             }
-    //             else {
-    //                 break;
-    //             }
-    //         }
-
-    //         for(auto elem : tempList) {
-    //             m_viewElements.removeAll(elem);
-    //         }
-
-    //         locker.unlock();
-    //         m_thread->msleep(16);
-    //     }
-    // }, Qt::DirectConnection);
 
     connect(this, &MainWindow::addExplosion, this, [=](QVector3D pos){
         ExplosionEffect *explosion = new ExplosionEffect(m_rootEntity);

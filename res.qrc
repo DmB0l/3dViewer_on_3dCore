@@ -9,6 +9,6 @@
         <file>ico/gridIco.png</file>
     </qresource>
     <qresource prefix="/">
-        <file>res/drone_model.obj</file>
+        <file>res/cow-nonormals.obj</file>
     </qresource>
 </RCC>
