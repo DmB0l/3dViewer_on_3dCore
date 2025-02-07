@@ -118,9 +118,9 @@ MainWindow::MainWindow(QWidget *parent)
     // }
 
     //TEXTURE
-    for(int i = 0; i < 1; i++) {
-        m_viewElements.append(m_drawing->drawTexture(QVector3D(13.5, 0.5, 13.5), m_rootEntity));
-    }
+    // for(int i = 0; i < 1; i++) {
+    //     m_viewElements.append(m_drawing->drawTexture(QVector3D(16.5, 0.5, 13.5), m_rootEntity));
+    // }
 
 
     // m_drawing->drawSceneLoader(QVector3D(13.5, 0.5, 13.5), m_rootEntity);
@@ -337,7 +337,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }, Qt::DirectConnection);
 
-    m_thread->start(); // Запускаем поток
+    m_thread->start();
 }
 
 MainWindow::~MainWindow()

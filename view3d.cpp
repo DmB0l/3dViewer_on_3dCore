@@ -18,7 +18,8 @@ View3d::View3d(QQuickWidget *quickWidget, QObject *parent)
     m_camera = m_rootObject->findChild<Qt3DRender::QCamera *>("camera");
     float aspect = static_cast<float>(quickWidget->screen()->size().width()) / quickWidget->screen()->size().height();
     m_camera->lens()->setPerspectiveProjection(65.f, aspect, 0.1f, 1000.f);
-    m_camera->setPosition(QVector3D(30.1302, 25.5669, 30.0011));
+    // m_camera->setPosition(QVector3D(30.1302, 25.5669, 30.0011));
+    m_camera->setPosition(QVector3D(100, 100, 100));
     m_camera->setViewCenter(QVector3D(0, 0, 0));
 
     m_cameraController = m_rootObject->findChild<Qt3DExtras::QFirstPersonCameraController *>("cameraController");

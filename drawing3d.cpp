@@ -102,11 +102,15 @@ void Drawing3d::drawSceneLoader(QVector3D pos, Qt3DCore::QEntity *root) {
     Qt3DCore::QEntity *sceneLoaderEntity = new Qt3DCore::QEntity(root);
     Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
     transform->setScale(1.0f);
+    transform->setTranslation(pos);
     sceneLoaderEntity->addComponent(transform);
+
+    Qt3DExtras::QDiffuseSpecularMaterial *objMaterial = new Qt3DExtras::QDiffuseSpecularMaterial();
+    sceneLoaderEntity->addComponent(objMaterial);
 
     Qt3DRender::QSceneLoader *sceneLoader = new Qt3DRender::QSceneLoader(sceneLoaderEntity);
 
-    sceneLoader->setSource(QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum.blend"));
+    sceneLoader->setSource(QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum.obj"));
 
     QObject::connect(sceneLoader, &Qt3DRender::QSceneLoader::statusChanged, this,
                      [=](Qt3DRender::QSceneLoader::Status s) {
@@ -159,6 +163,7 @@ Qt3DCore::QEntity* Drawing3d::drawTexture(QVector3D pos, Qt3DCore::QEntity *root
     textureLoader1->setSource(QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum_DefaultMaterial_BaseColor.png"));
     textureLoader1->setWrapMode(Qt3DRender::QTextureWrapMode(Qt3DRender::QTextureWrapMode::Repeat));
     objMaterial->setDiffuse(QVariant::fromValue(textureLoader1));
+    objMaterial->setAmbient(QColor(0, 0, 100));
 
     Qt3DCore::QTransform *objTransform = new Qt3DCore::QTransform();
     objTransform->setScale(1.0f);
