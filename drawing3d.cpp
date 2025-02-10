@@ -15,7 +15,7 @@ Qt3DCore::QEntity* Drawing3d::drawPlane(QVector3D pos, double width, double heig
     // planeMaterial->setDiffuse(color);
     planeMaterial->setAmbient(color);
 
-    Qt3DCore::QEntity *planeEntity = new Qt3DCore::QEntity();
+    Qt3DCore::QEntity *planeEntity = new Qt3DCore::QEntity(root);
     planeEntity->addComponent(planeMaterial);
     planeEntity->addComponent(planeMesh);
     planeEntity->addComponent(planeTransform);
@@ -67,6 +67,44 @@ Qt3DCore::QEntity* Drawing3d::drawCube(QVector3D pos, double size, QColor color,
     return cuboidEntity;
 }
 
+Qt3DCore::QEntity *Drawing3d::drawTorus(QVector3D pos, double radius, double minorRadius, int rings,
+                                        double rotationX, double rotationY, QColor color, Qt3DCore::QEntity *root) {
+    Qt3DExtras::QTorusMesh *torus = new Qt3DExtras::QTorusMesh();
+    torus->setRadius(radius);
+    torus->setMinorRadius(minorRadius);
+    if(rings > 0) {
+        torus->setRings(rings);
+    }
+    // torus->setSlices(10);
+
+    Qt3DCore::QTransform *torusTransform = new Qt3DCore::QTransform();
+    torusTransform->setTranslation(pos);
+    torusTransform->setRotationX(rotationX);
+    torusTransform->setRotationY(rotationY);
+
+    Qt3DExtras::QPhongMaterial *torusMaterial = new Qt3DExtras::QPhongMaterial();
+    torusMaterial->setAmbient(color);
+
+    //Cuboid
+    Qt3DCore::QEntity *cuboidEntity = new Qt3DCore::QEntity(root);
+    cuboidEntity->addComponent(torus);
+    cuboidEntity->addComponent(torusMaterial);
+    cuboidEntity->addComponent(torusTransform);
+
+    cuboidEntity->setObjectName("torus");
+
+    auto *picker = new Qt3DRender::QObjectPicker();
+    picker->setHoverEnabled(true);
+    picker->setEnabled(true);
+    QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
+        torusMaterial->setAmbient(QColor("yellow"));
+        emit entityClicked(cuboidEntity, color);
+    });
+    cuboidEntity->addComponent(picker);
+
+    return cuboidEntity;
+}
+
 Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor color, Qt3DCore::QEntity *root) {
     Qt3DExtras::QSphereMesh *sphereMesh = new Qt3DExtras::QSphereMesh();
     sphereMesh->setRadius(radius);
@@ -97,77 +135,30 @@ Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor co
     return sphereEntity;
 }
 
-void Drawing3d::drawSceneLoader(QVector3D pos, Qt3DCore::QEntity *root) {
-    // Создаем загрузчик сцены
-    Qt3DCore::QEntity *sceneLoaderEntity = new Qt3DCore::QEntity(root);
-    Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
-    transform->setScale(1.0f);
-    transform->setTranslation(pos);
-    sceneLoaderEntity->addComponent(transform);
-
-    Qt3DExtras::QDiffuseSpecularMaterial *objMaterial = new Qt3DExtras::QDiffuseSpecularMaterial();
-    sceneLoaderEntity->addComponent(objMaterial);
-
-    Qt3DRender::QSceneLoader *sceneLoader = new Qt3DRender::QSceneLoader(sceneLoaderEntity);
-
-    sceneLoader->setSource(QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum.obj"));
-
-    QObject::connect(sceneLoader, &Qt3DRender::QSceneLoader::statusChanged, this,
-                     [=](Qt3DRender::QSceneLoader::Status s) {
-                         if (s == Qt3DRender::QSceneLoader::Ready) {
-                             // Создаем одну общую трансформацию для всей модели
-                             // QVector<Qt3DCore::QEntity *> entities = sceneLoader->entities();
-                             // Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
-                             // transform->setScale(0.1f);
-                             // if(!entities.empty()) {
-                             //     entities[0]->addComponent(transform);
-                             // }
-
-                             for(auto name : sceneLoader->entityNames()) {
-                                 qDebug() << name;
-                                 // Qt3DCore::QEntity *loadedEntity = sceneLoader->entity(name);
-                                 // if (loadedEntity) {
-                                 //     Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
-                                 //     transform->setScale(0.1f);
-
-                                 //     loadedEntity->addComponent(transform);
-                                 // }
-                             }
-                         }
-                     });
-
-    sceneLoaderEntity->addComponent(sceneLoader);
-
-    // root->addComponent(sceneLoaderEntity);
-}
-
-Qt3DCore::QEntity* Drawing3d::drawTexture(QVector3D pos, Qt3DCore::QEntity *root) {
 
 
-    // Qt3DExtras::QSphereMesh *objMesh = new Qt3DExtras::QSphereMesh();
-    // objMesh->setRadius(1.0f); // Радиус сферы
-    // objMesh->setRings(20);    // Количество колец
-    // objMesh->setSlices(20);   // Количество сегментов
-
+Qt3DCore::QEntity* Drawing3d::drawTextureObj(QString objPath, QString texturePath, QVector3D pos,
+                                             double scale, double rotationX, double rotationY,
+                                             Qt3DCore::QEntity *root)
+{
     Qt3DRender::QMesh *objMesh = new Qt3DRender::QMesh();
-    const QUrl url = QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum.obj");
-    objMesh->setSource(url);
-
-    // Создаем материал
-    // Qt3DExtras::QDiffuseSpecularMaterial *objMaterial = new Qt3DExtras::QDiffuseSpecularMaterial();
-    // objMaterial->setDiffuse(QColor(Qt::white)); // Устанавливаем белый цвет
+    // const QUrl url = QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum.obj");
+    objMesh->setSource(QUrl(objPath));
 
     Qt3DExtras::QDiffuseSpecularMaterial *objMaterial = new Qt3DExtras::QDiffuseSpecularMaterial();
 
     Qt3DRender::QTextureLoader *textureLoader1 = new Qt3DRender::QTextureLoader();
-    textureLoader1->setSource(QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum_DefaultMaterial_BaseColor.png"));
+    // textureLoader1->setSource(QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum_DefaultMaterial_BaseColor.png"));
+    textureLoader1->setSource(QUrl(texturePath));
     textureLoader1->setWrapMode(Qt3DRender::QTextureWrapMode(Qt3DRender::QTextureWrapMode::Repeat));
     objMaterial->setDiffuse(QVariant::fromValue(textureLoader1));
-    objMaterial->setAmbient(QColor(0, 0, 100));
+    // objMaterial->setAmbient(QColor(0, 0, 100));
 
     Qt3DCore::QTransform *objTransform = new Qt3DCore::QTransform();
-    objTransform->setScale(1.0f);
+    objTransform->setScale(scale);
     objTransform->setTranslation(pos);
+    objTransform->setRotationX(rotationX);
+    objTransform->setRotationY(rotationY);
 
     Qt3DCore::QEntity *objEntity = new Qt3DCore::QEntity(root);
 
@@ -175,12 +166,15 @@ Qt3DCore::QEntity* Drawing3d::drawTexture(QVector3D pos, Qt3DCore::QEntity *root
     objEntity->addComponent(objMaterial);
     objEntity->addComponent(objTransform);
 
-    objEntity->setObjectName("texture cube");
+    objEntity->setObjectName("texture obj");
 
     return objEntity;
 }
 
-Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor color, double scale, Qt3DCore::QEntity *root) {
+Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor color,
+                                      double scale, double rotationX, double rotationY,
+                                      Qt3DCore::QEntity *root)
+{
     // Загружаем меш из файла .obj
     Qt3DRender::QMesh *objMesh = new Qt3DRender::QMesh();
     const QUrl url = QUrl(filePath);
@@ -189,7 +183,7 @@ Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor co
 
     // Создаем материал для объекта
     Qt3DExtras::QPhongMaterial *objMaterial = new Qt3DExtras::QPhongMaterial();
-    objMaterial->setDiffuse(color);
+    // objMaterial->setDiffuse(color);
     objMaterial->setAmbient(color);
 
 
@@ -206,6 +200,8 @@ Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor co
     Qt3DCore::QTransform *objTransform = new Qt3DCore::QTransform();
     objTransform->setScale(scale);
     objTransform->setTranslation(pos);
+    objTransform->setRotationX(rotationX);
+    objTransform->setRotationY(rotationY);
 
     Qt3DCore::QEntity *objEntity = new Qt3DCore::QEntity(root);
 
@@ -219,7 +215,7 @@ Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor co
     picker->setHoverEnabled(true);
     picker->setEnabled(true);
     QObject::connect(picker, &Qt3DRender::QObjectPicker::pressed, this, [=](){
-        // objMaterial->setAmbient(QColor("yellow"));
+        objMaterial->setAmbient(QColor("yellow"));
         emit entityClicked(objEntity, color);
     });
     objEntity->addComponent(picker);
@@ -380,22 +376,17 @@ QVector<Qt3DCore::QEntity *> Drawing3d::createHeart(Qt3DCore::QEntity *parentEnt
 }
 
 Qt3DCore::QEntity* Drawing3d::createStar(Qt3DCore::QEntity *parent, const QVector3D &position, float size) {
-    // Create a new star entity
     Qt3DCore::QEntity *starEntity = new Qt3DCore::QEntity(parent);
 
-    // Create a sphere mesh for the star
     Qt3DExtras::QSphereMesh *starMesh = new Qt3DExtras::QSphereMesh();
     starMesh->setRadius(size); // Set the size of the star
 
-    // Create a transform for the star
     Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
     transform->setTranslation(position); // Set the position of the star
 
-    // Create a material for the star
     Qt3DExtras::QPhongMaterial *material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse(QColor(255, 255, 255)); // Set color to white
 
-    // Add components to the star entity
     starEntity->addComponent(starMesh);
     starEntity->addComponent(transform);
     starEntity->addComponent(material);
@@ -412,7 +403,6 @@ QVector<Qt3DCore::QEntity*> Drawing3d::createStarrySky(Qt3DCore::QEntity *rootEn
     QRandomGenerator *gen = QRandomGenerator::global();
     for(int j = 0; j < 3; j++) {
         for (int i = 0; i < starCount / 3; ++i) {
-            // Generate random position and size for each star
 
             int posX = gen->bounded(0, 2);
             int posY = gen->bounded(0, 2);
@@ -454,21 +444,59 @@ QVector<Qt3DCore::QEntity*> Drawing3d::createStarrySky(Qt3DCore::QEntity *rootEn
             }
 
             QVector3D position(
-                // gen->bounded(-100, 100), // Random x
-                // gen->bounded(-100, 100), // Random y
-                // gen->bounded(-100, 100)  // Random z
                 coordX,
                 coordY,
                 coordZ
                 );
-            float randomValue = gen->generateDouble(); // Возвращает значение от 0.0 до 1.0
-            // Масштабируем его в диапазон от 0.05 до 0.2
+            float randomValue = gen->generateDouble();
             float size = 0.05 + randomValue * (0.2 - 0.05);
 
-            // Create the star
             stars.append(createStar(rootEntity, position, size));
         }
     }
-    // emit starsSkyUpdate(stars);
     return stars;
 }
+
+// void Drawing3d::drawSceneLoader(QVector3D pos, Qt3DCore::QEntity *root) {
+//     // Создаем загрузчик сцены
+//     Qt3DCore::QEntity *sceneLoaderEntity = new Qt3DCore::QEntity(root);
+//     Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
+//     transform->setScale(1.0f);
+//     transform->setTranslation(pos);
+//     sceneLoaderEntity->addComponent(transform);
+
+//     Qt3DExtras::QDiffuseSpecularMaterial *objMaterial = new Qt3DExtras::QDiffuseSpecularMaterial();
+//     sceneLoaderEntity->addComponent(objMaterial);
+
+//     Qt3DRender::QSceneLoader *sceneLoader = new Qt3DRender::QSceneLoader(sceneLoaderEntity);
+
+//     sceneLoader->setSource(QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum.obj"));
+
+//     QObject::connect(sceneLoader, &Qt3DRender::QSceneLoader::statusChanged, this,
+//                      [=](Qt3DRender::QSceneLoader::Status s) {
+//                          if (s == Qt3DRender::QSceneLoader::Ready) {
+//                              // Создаем одну общую трансформацию для всей модели
+//                              // QVector<Qt3DCore::QEntity *> entities = sceneLoader->entities();
+//                              // Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
+//                              // transform->setScale(0.1f);
+//                              // if(!entities.empty()) {
+//                              //     entities[0]->addComponent(transform);
+//                              // }
+
+//                              for(auto name : sceneLoader->entityNames()) {
+//                                  qDebug() << name;
+//                                  // Qt3DCore::QEntity *loadedEntity = sceneLoader->entity(name);
+//                                  // if (loadedEntity) {
+//                                  //     Qt3DCore::QTransform *transform = new Qt3DCore::QTransform();
+//                                  //     transform->setScale(0.1f);
+
+//                                  //     loadedEntity->addComponent(transform);
+//                                  // }
+//                              }
+//                          }
+//                      });
+
+//     sceneLoaderEntity->addComponent(sceneLoader);
+
+//     // root->addComponent(sceneLoaderEntity);
+// }

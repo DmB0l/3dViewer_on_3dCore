@@ -23,17 +23,23 @@ class Drawing3d : public QObject
 public:
     Drawing3d(QObject *parent = nullptr);
 
-    void drawSceneLoader(QVector3D pos, Qt3DCore::QEntity *root);
 public slots:
-    Qt3DCore::QEntity *drawTexture(QVector3D pos, Qt3DCore::QEntity *root);
+    Qt3DCore::QEntity* drawTextureObj(QString objPath, QString texturePath, QVector3D pos,
+                                      double scale, double rotationX, double rotationY,
+                                      Qt3DCore::QEntity *root);
 
-    Qt3DCore::QEntity *drawPlane(QVector3D pos, double width, double height, QColor color, Qt3DCore::QEntity *root);
+    Qt3DCore::QEntity* drawObj(QString filePath, QVector3D pos, QColor color,
+                               double scale, double rotationX, double rotationY,
+                               Qt3DCore::QEntity *root);
+
+    Qt3DCore::QEntity* drawPlane(QVector3D pos, double width, double height, QColor color, Qt3DCore::QEntity *root);
 
     Qt3DCore::QEntity* drawSphere(QVector3D pos, double radius, QColor color, Qt3DCore::QEntity *root);
 
     Qt3DCore::QEntity* drawCube(QVector3D pos, double size, QColor color, Qt3DCore::QEntity *root);
 
-    Qt3DCore::QEntity *drawObj(QString filePath, QVector3D pos, QColor color, double scale, Qt3DCore::QEntity *root);
+    Qt3DCore::QEntity* drawTorus(QVector3D pos, double radius, double minorRadius, int rings,
+                                 double rotationX, double rotationY, QColor color, Qt3DCore::QEntity *root);
 
     QVector<Qt3DCore::QEntity *> createGrid(double minX = 0, double minY = 0, double minZ = 0,
                                             double maxX = 20, double maxY = 20, double m_maxZ = 20,
@@ -44,11 +50,13 @@ public slots:
 
     QVector<Qt3DCore::QEntity *> createHeart(Qt3DCore::QEntity *parentEntity, QVector3D pos);
 
-    QVector<Qt3DCore::QEntity*> createStarrySky(Qt3DCore::QEntity *rootEntity, int starCount,
-                                double minX, double minY, double minZ,
-                                double maxX, double maxY, double maxZ);
+    QVector<Qt3DCore::QEntity *> createStarrySky(Qt3DCore::QEntity *rootEntity, int starCount,
+                                                 double minX, double minY, double minZ,
+                                                 double maxX, double maxY, double maxZ);
 
-    Qt3DCore::QEntity *drawLine(double x1, double y1, double z1, double x2, double y2, double z2, QColor color, QString name, Qt3DCore::QEntity *root);
+    Qt3DCore::QEntity* drawLine(double x1, double y1, double z1, double x2, double y2, double z2, QColor color, QString name, Qt3DCore::QEntity *root);
+
+    // void drawSceneLoader(QVector3D pos, Qt3DCore::QEntity *root);
 
 private:
     Qt3DCore::QEntity* createStar(Qt3DCore::QEntity *parent, const QVector3D &position, float size);

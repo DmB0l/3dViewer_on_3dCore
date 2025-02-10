@@ -165,6 +165,126 @@ void API::readPendingDatagrams()
 
             emit addPlane(x, y, z, width, height, QColor(color));
         }
+
+        // TORUS
+        else if(type == "torus") {
+            if(jsonObj.size() != 8) {
+                qDebug() << "Недостаточно параметров для torus.";
+                return;
+            }
+            if(!jsonObj.contains("center") || !jsonObj.contains("radius") ||
+                !jsonObj.contains("minorRadius") ||!jsonObj.contains("rings") ||
+                !jsonObj.contains("rotationX") || !jsonObj.contains("rotationY") ||
+                !jsonObj.contains("color"))
+            {
+                qDebug() << "Не те параметры для torus.";
+                return;
+            }
+
+            QJsonArray centerArray = jsonObj.value("center").toArray();
+            double radius = jsonObj.value("radius").toDouble();
+            double minorRadius = jsonObj.value("minorRadius").toDouble();
+            int rings = jsonObj.value("rings").toInt();
+            double rotationX = jsonObj.value("rotationX").toDouble();
+            double rotationY = jsonObj.value("rotationY").toDouble();
+            QString color = jsonObj.value("color").toString();
+
+            // Проверка на наличие необходимых данных
+            if (centerArray.size() < 3) {
+                qDebug() << "Недостаточно точек для центра torus.";
+                return;
+            }
+
+            // Извлечение координат
+            qreal x = centerArray[0].toDouble();
+            qreal y = centerArray[1].toDouble();
+            qreal z = centerArray[2].toDouble();
+
+            // Здесь вы можете обработать полученные данные
+            qDebug() << "Получен torus с центром:" << x << y << z << "радиус:" << radius
+                     << "minor radius:" << minorRadius << "rings:" << rings << "rotationX:" << rotationX
+                     << "rotationY:" << rotationY << "и цветом:" << color;
+
+            emit addTorus(x, y, z, radius, minorRadius, rings, rotationX, rotationY, QColor(color));
+        }
+
+        // OBJ
+        else if(type == "obj") {
+            if(jsonObj.size() != 7) {
+                qDebug() << "Недостаточно параметров для объекта.";
+                return;
+            }
+            if(!jsonObj.contains("path") || !jsonObj.contains("center") ||
+                !jsonObj.contains("color") || !jsonObj.contains("scale") ||
+                !jsonObj.contains("rotationX") || !jsonObj.contains("rotationY"))
+            {
+                qDebug() << "Не те параметры для объекта.";
+                return;
+            }
+
+            QString path = jsonObj.value("path").toString();
+            QJsonArray centerArray = jsonObj.value("center").toArray();
+            QString color = jsonObj.value("color").toString();
+            double scale = jsonObj.value("scale").toDouble();
+            double rotationX = jsonObj.value("rotationX").toDouble();
+            double rotationY = jsonObj.value("rotationY").toDouble();
+
+            // Проверка на наличие необходимых данных
+            if (centerArray.size() < 3) {
+                qDebug() << "Недостаточно точек для центра объекта.";
+                return;
+            }
+
+            // Извлечение координат
+            qreal x = centerArray[0].toDouble();
+            qreal y = centerArray[1].toDouble();
+            qreal z = centerArray[2].toDouble();
+
+            // Здесь вы можете обработать полученные данные
+            qDebug() << "Получен obj с центром:" << x << y << z << "путь:" << path << "scale:" << scale << "и цветом:" << color;
+
+            emit addObj(path, x, y, z, scale, rotationX, rotationY, QColor(color));
+        }
+
+        // TEXTURE OBJ
+        else if(type == "textureObj") {
+            if(jsonObj.size() != 7) {
+                qDebug() << "Недостаточно параметров для объекта с текстурой.";
+                return;
+            }
+            if(!jsonObj.contains("objPath") || !jsonObj.contains("texturePath") ||
+                !jsonObj.contains("center") || !jsonObj.contains("scale") ||
+                !jsonObj.contains("rotationX") || !jsonObj.contains("rotationY"))
+            {
+                qDebug() << "Не те параметры для объекта с текстурой.";
+                return;
+            }
+
+            QString objPath = jsonObj.value("objPath").toString();
+            QString texturePath = jsonObj.value("texturePath").toString();
+            QJsonArray centerArray = jsonObj.value("center").toArray();
+            double scale = jsonObj.value("scale").toDouble();
+            double rotationX = jsonObj.value("rotationX").toDouble();
+            double rotationY = jsonObj.value("rotationY").toDouble();
+
+            // Проверка на наличие необходимых данных
+            if (centerArray.size() < 3) {
+                qDebug() << "Недостаточно точек для центра объекта с текстурой.";
+                return;
+            }
+
+            // Извлечение координат
+            qreal x = centerArray[0].toDouble();
+            qreal y = centerArray[1].toDouble();
+            qreal z = centerArray[2].toDouble();
+
+            // Здесь вы можете обработать полученные данные
+            qDebug() << "Получен obj с центром:" << x << y << z << "путь до объекта:"
+                     << objPath << "путь до текстуры:" << texturePath << "scale:"
+                     << scale;
+
+            emit addTextureObj(objPath, texturePath, x, y, z, scale, rotationX, rotationY);
+        }
         else if(type == "clearAll") {
             emit clearAll();
         }

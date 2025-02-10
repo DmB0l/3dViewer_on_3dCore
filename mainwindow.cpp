@@ -57,20 +57,41 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_api, &API::addCube, this, [=](double x, double y, double z,
                                             double size,
-                                            QColor color){
+                                            QColor color) {
         m_viewElements.append(m_drawing->drawCube(QVector3D(x, y, z), size, color, m_rootEntity));
     });
 
     connect(m_api, &API::addSphere, this, [=](double x, double y, double z,
                                               double radius,
-                                              QColor color){
+                                              QColor color) {
         m_viewElements.append(m_drawing->drawSphere(QVector3D(x, y, z), radius, color, m_rootEntity));
     });
 
     connect(m_api, &API::addPlane, this, [=](double x, double y, double z,
                                              double width, double height,
-                                             QColor color){
+                                             QColor color) {
         m_viewElements.append(m_drawing->drawPlane(QVector3D(x, y, z), width, height, color, m_rootEntity));
+    });
+
+    connect(m_api, &API::addTorus, this, [=](double x, double y, double z,
+                                             double radius, double minorRadius, int rings,
+                                             double rotationX, double rotationY, QColor color) {
+        m_viewElements.append(m_drawing->drawTorus(QVector3D(x, y, z), radius, minorRadius, rings, rotationX, rotationY, color, m_rootEntity));
+    });
+
+    connect(m_api, &API::addObj, this, [=](QString path,
+                                           double x, double y, double z,
+                                           double scale,
+                                           double rotationX, double rotationY,
+                                           QColor color) {
+        m_viewElements.append(m_drawing->drawObj(path, QVector3D(x, y, z), color, scale, rotationX, rotationY, m_rootEntity));
+    });
+
+    connect(m_api, &API::addTextureObj, this, [=](QString objPath, QString texturePath,
+                                                  double x, double y, double z,
+                                                  double scale,
+                                                  double rotationX, double rotationY) {
+        m_viewElements.append(m_drawing->drawTextureObj(objPath, texturePath, QVector3D(x, y, z), scale, rotationX, rotationY, m_rootEntity));
     });
 
     connect(m_api, &API::clearAll, this, [=](){
@@ -112,43 +133,44 @@ MainWindow::MainWindow(QWidget *parent)
                                        m_rootEntity);
     }
 
-    //CUBES
+    // //TORUS
+    // m_viewElements.append(m_drawing->drawTorus(QVector3D(10.5, 10.5, 10.5), 1.0f, 0.5f, 30, 90, 0, QColor(QRgb(0x665423)), m_rootEntity));
+
+    // //КОРОВИЙ АД
+    // addCowHell();
+
+    // //CUBES
     // for(int i = 0; i < 20; i++) {
     //     m_viewElements.append(m_drawing->drawCube(QVector3D(i + 0.5, 0.5, i + 0.5), 1.0f, QColor(QRgb(0x665423)), m_rootEntity));
     // }
 
-    //TEXTURE
-    // for(int i = 0; i < 1; i++) {
-    //     m_viewElements.append(m_drawing->drawTexture(QVector3D(16.5, 0.5, 13.5), m_rootEntity));
-    // }
+    // //TEXTURE
+    // m_viewElements.append(m_drawing->drawTextureObj("qrc:/res/drum.obj",
+    //                                                 "qrc:/res/drum_DefaultMaterial_BaseColor.png",
+    //                                                 QVector3D(16.5, 0.5, 13.5),
+    //                                                 1.0f, 0, 0,
+    //                                                 m_rootEntity));
 
 
-    // m_drawing->drawSceneLoader(QVector3D(13.5, 0.5, 13.5), m_rootEntity);
-
-
-
-
-
-
-    //HEART
+    // //HEART
     // m_drawing->createHeart(m_rootEntity, QVector3D(20, 20, 20));
 
 
     // //OBJ
-    // Qt3DCore::QEntity *caw = m_drawing->drawObj("file:///home/user061/projects/3dViewer_on_3dCore/res/cow-nonormals.obj",
+    // Qt3DCore::QEntity *caw = m_drawing->drawObj("qrc:/res/cow-nonormals.obj",
     //                                             QVector3D(50,3.5,50),
     //                                             QColor("blue"),
-    //                                             1.0,
+    //                                             1.0, 0, 0,
     //                                             m_rootEntity);
 
     // Qt3DCore::QEntity *drone = m_drawing->drawObj("qrc:/res/drone_model.obj",
     //                                               QVector3D(20,20,20),
     //                                               QColor("pink"),
-    //                                               0.2,
+    //                                               0.2, 0, 0,
     //                                               m_rootEntity);
 
-    // // m_viewElements.append(caw);
-    // // m_viewElements.append(drone);
+    // m_viewElements.append(caw);
+    // m_viewElements.append(drone);
 
 
     // //ANIMATION DRONE
@@ -215,129 +237,11 @@ MainWindow::MainWindow(QWidget *parent)
     //         drone->deleteLater();
     //         caw->deleteLater();
 
-    //         // m_viewElements.removeOne(caw);
-    //         // m_viewElements.removeOne(drone);
+    //         m_viewElements.removeOne(caw);
+    //         m_viewElements.removeOne(drone);
     //     }
     // });
     // timer->start(16);
-
-
-
-    //КОРОВИЙ АД
-    QTimer *timerHell = new QTimer(this);
-    connect(timerHell, &QTimer::timeout, this, [=]() {
-        // for(int i = 0; i < 1000; i++) {
-        QMutexLocker locker(m_mutex);
-        int coordX = m_gen->bounded(0, 100);
-        int coordY = m_gen->bounded(0, 100);
-        int coordZ = m_gen->bounded(0, 100);
-
-        int r = m_gen->bounded(0, 255);
-        int g = m_gen->bounded(0, 255);
-        int b = m_gen->bounded(0, 255);
-
-        double size = m_gen->bounded(0, 3);
-
-        Qt3DCore::QEntity *cawHell = m_drawing->drawObj("qrc:/res/cow-nonormals.obj",
-                                                        QVector3D(coordX, coordY, coordZ),
-                                                        QColor(r, g, b),
-                                                        size,
-                                                        m_rootEntity);
-
-        Qt3DCore::QTransform *transformCaw = cawHell->componentsOfType<Qt3DCore::QTransform>().at(0);
-
-        int endX = m_gen->bounded(-50, 50);
-        int endY = m_gen->bounded(-50, 50);
-        int endZ = m_gen->bounded(-50, 50);
-
-        int timeAnimation = m_gen->bounded(1000, 30000);
-
-        // transformCaw->setRotation()
-            // QQuaternion
-
-        // Анимация вращения
-        int axi = m_gen->bounded(0, 3);
-        switch (axi) {
-        case 0:
-
-            break;
-        default:
-            break;
-        }
-
-        QPropertyAnimation *rotationAnimationCaw = new QPropertyAnimation(transformCaw);
-        rotationAnimationCaw->setTargetObject(transformCaw);
-        rotationAnimationCaw->setPropertyName("rotation");
-        rotationAnimationCaw->setStartValue(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 0));
-        rotationAnimationCaw->setEndValue(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 360));
-        rotationAnimationCaw->setDuration(10000); // 5 секунд
-        rotationAnimationCaw->setLoopCount(-1); // Бесконечная анимация
-        rotationAnimationCaw->start();
-
-        // Анимация передвижения
-        QPropertyAnimation *moveAnimationCaw = new QPropertyAnimation(transformCaw);
-        moveAnimationCaw->setTargetObject(transformCaw);
-        moveAnimationCaw->setPropertyName("translation");
-        moveAnimationCaw->setStartValue(QVector3D(coordX, coordY, coordZ));
-        moveAnimationCaw->setEndValue(QVector3D(endX, endY, endZ));
-        moveAnimationCaw->setDuration(timeAnimation); // 5 секунд
-        moveAnimationCaw->setLoopCount(-1); // Бесконечная анимация
-        moveAnimationCaw->start();
-
-
-        m_viewElements.append(cawHell);
-        // }
-    });
-    timerHell->start(100);
-
-    m_thread = new QThread();
-    m_thread->setObjectName("collision thread");
-
-    connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
-
-    connect(this, &MainWindow::addExplosion, this, [=](QVector3D pos){
-        ExplosionEffect *explosion = new ExplosionEffect(m_rootEntity);
-        explosion->setPosition(pos);
-    });
-
-    QObject::connect(m_thread, &QThread::started, this, [=]() {
-        while (m_isThreadWork) {
-            QMutexLocker locker(m_mutex);
-
-            for(int i = 0; i < m_viewElements.size(); i++) {
-                for(int j = 0; j < m_viewElements.size(); j++) {
-                    if(i != j && i < m_viewElements.size()) {
-                        QVector3D pos1 = m_viewElements.at(i)->componentsOfType<Qt3DCore::QTransform>().at(0)->translation();
-                        QVector3D pos2 = m_viewElements.at(j)->componentsOfType<Qt3DCore::QTransform>().at(0)->translation();
-
-                        if ((pos1 - pos2).length() < 3.0f) {
-                            emit addExplosion((pos1 + pos2) / 2.0f);
-
-                            // if(i < m_viewElements.size()) {
-                            m_viewElements.at(i)->setEnabled(false);
-                            m_viewElements.at(j)->setEnabled(false);
-
-                            m_viewElements.at(i)->deleteLater();
-                            m_viewElements.at(j)->deleteLater();
-
-                            m_viewElements.removeAt(i);
-                            if(j > i) {
-                                j--;
-                            }
-                            m_viewElements.removeAt(j);
-                            j = -1;
-                            // }
-                        }
-                    }
-                }
-            }
-
-            locker.unlock();
-            m_thread->msleep(16);
-        }
-    }, Qt::DirectConnection);
-
-    m_thread->start();
 }
 
 MainWindow::~MainWindow()
@@ -462,6 +366,121 @@ void MainWindow::showColorSettings() {
     }
 }
 
+void MainWindow::addCowHell() {
+    //КОРОВИЙ АД
+    QTimer *timerHell = new QTimer(this);
+    connect(timerHell, &QTimer::timeout, this, [=]() {
+        // for(int i = 0; i < 1000; i++) {
+        QMutexLocker locker(m_mutex);
+        int coordX = m_gen->bounded(0, 100);
+        int coordY = m_gen->bounded(0, 100);
+        int coordZ = m_gen->bounded(0, 100);
+
+        int r = m_gen->bounded(0, 255);
+        int g = m_gen->bounded(0, 255);
+        int b = m_gen->bounded(0, 255);
+
+        double size = m_gen->bounded(0, 3);
+
+        Qt3DCore::QEntity *cowHell = m_drawing->drawObj("qrc:/res/cow-nonormals.obj",
+                                                        QVector3D(coordX, coordY, coordZ),
+                                                        QColor(r, g, b),
+                                                        size, 0, 0,
+                                                        m_rootEntity);
+
+        Qt3DCore::QTransform *transformCaw = cowHell->componentsOfType<Qt3DCore::QTransform>().at(0);
+
+        int endX = m_gen->bounded(-50, 50);
+        int endY = m_gen->bounded(-50, 50);
+        int endZ = m_gen->bounded(-50, 50);
+
+        int timeAnimation = m_gen->bounded(1000, 30000);
+
+        // Анимация вращения
+        int axi = m_gen->bounded(0, 3);
+        switch (axi) {
+        case 0:
+
+            break;
+        default:
+            break;
+        }
+
+        QPropertyAnimation *rotationAnimationCaw = new QPropertyAnimation(transformCaw);
+        rotationAnimationCaw->setTargetObject(transformCaw);
+        rotationAnimationCaw->setPropertyName("rotation");
+        rotationAnimationCaw->setStartValue(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 0));
+        rotationAnimationCaw->setEndValue(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 360));
+        rotationAnimationCaw->setDuration(10000); // 5 секунд
+        rotationAnimationCaw->setLoopCount(-1); // Бесконечная анимация
+        rotationAnimationCaw->start();
+
+        // Анимация передвижения
+        QPropertyAnimation *moveAnimationCaw = new QPropertyAnimation(transformCaw);
+        moveAnimationCaw->setTargetObject(transformCaw);
+        moveAnimationCaw->setPropertyName("translation");
+        moveAnimationCaw->setStartValue(QVector3D(coordX, coordY, coordZ));
+        moveAnimationCaw->setEndValue(QVector3D(endX, endY, endZ));
+        moveAnimationCaw->setDuration(timeAnimation); // 5 секунд
+        moveAnimationCaw->setLoopCount(-1); // Бесконечная анимация
+        moveAnimationCaw->start();
+
+
+        m_viewElements.append(cowHell);
+        // }
+    });
+    timerHell->start(100);
+
+    m_thread = new QThread();
+    m_thread->setObjectName("collision thread");
+
+    connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
+
+    connect(this, &MainWindow::addExplosion, this, [=](QVector3D pos){
+        ExplosionEffect *explosion = new ExplosionEffect(m_rootEntity);
+        explosion->setPosition(pos);
+    });
+
+    QObject::connect(m_thread, &QThread::started, this, [=]() {
+        while (m_isThreadWork) {
+            QMutexLocker locker(m_mutex);
+
+            for(int i = 0; i < m_viewElements.size(); i++) {
+                for(int j = 0; j < m_viewElements.size(); j++) {
+                    if(i != j && i < m_viewElements.size()) {
+                        QVector3D pos1 = m_viewElements.at(i)->componentsOfType<Qt3DCore::QTransform>().at(0)->translation();
+                        QVector3D pos2 = m_viewElements.at(j)->componentsOfType<Qt3DCore::QTransform>().at(0)->translation();
+
+                        if ((pos1 - pos2).length() < 3.0f) {
+                            emit addExplosion((pos1 + pos2) / 2.0f);
+
+                            // if(i < m_viewElements.size()) {
+                            m_viewElements.at(i)->setEnabled(false);
+                            m_viewElements.at(j)->setEnabled(false);
+
+                            m_viewElements.at(i)->deleteLater();
+                            m_viewElements.at(j)->deleteLater();
+
+                            m_viewElements.removeAt(i);
+                            if(j > i) {
+                                j--;
+                            }
+                            m_viewElements.removeAt(j);
+                            j = -1;
+                            // }
+                        }
+                    }
+                }
+            }
+
+            locker.unlock();
+            m_thread->msleep(16);
+        }
+    }, Qt::DirectConnection);
+
+    m_thread->start();
+}
+
 void MainWindow::closeEvent(QCloseEvent *event) {
     if(m_fieldSettingsWidget) {
         m_fieldSettingsWidget->close();
@@ -479,6 +498,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if(event->key() == Qt::Key_Delete) {
         if(m_selectedEntity != nullptr) {
+            m_viewElements.removeOne(m_selectedEntity);
+
             m_selectedEntity->setEnabled(false);
             m_selectedEntity->deleteLater();
             m_selectedEntity = nullptr;

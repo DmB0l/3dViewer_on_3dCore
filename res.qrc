@@ -10,5 +10,9 @@
     </qresource>
     <qresource prefix="/">
         <file>res/cow-nonormals.obj</file>
+        <file>res/drum.mtl</file>
+        <file>res/drum.obj</file>
+        <file>res/drum_DefaultMaterial_BaseColor.png</file>
+        <file>res/drone_model.obj</file>
     </qresource>
 </RCC>

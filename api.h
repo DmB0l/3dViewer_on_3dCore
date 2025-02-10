@@ -51,6 +51,21 @@ signals:
                   double width, double height,
                   QColor color);
 
+    void addObj(QString path,
+                double x, double y, double z,
+                double scale,
+                double rotationX, double rotationY,
+                QColor color);
+
+    void addTextureObj(QString objPath, QString texturePath,
+                       double x, double y, double z,
+                       double scale,
+                       double rotationX, double rotationY);
+
+    void addTorus(double x, double y, double z,
+                  double radius, double minorRadius, int rings,
+                  double rotationX, double rotationY, QColor color);
+
     void clearAll();
 };
 

@@ -25,14 +25,12 @@
 #include <QGraphicsView>
 #include <QGraphicsProxyWidget>
 
-#include "custom3dwindow.h"
 #include "lineentity.h"
 #include "drawing3d.h"
 #include "fieldsettingswidget.h"
 #include "camerasettingswidget.h"
 #include "colorsettingswidget.h"
 #include "api.h"
-#include "customgraphicsview.h"
 #include "view3d.h"
 #include "explosioneffect.h"
 
@@ -60,6 +58,7 @@ private slots:
     void showGridSettings();
     void showCameraSettings();
     void showColorSettings();
+    void addCowHell();
 
 signals:
     void addExplosion(QVector3D pos);
