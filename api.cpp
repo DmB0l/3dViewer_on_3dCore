@@ -14,33 +14,32 @@ void API::readPendingDatagrams()
     buffer.resize(m_listenSocket->pendingDatagramSize());
     qint64 bytesRead = m_listenSocket->readDatagram(buffer.data(), buffer.size());
     if (bytesRead < 0) {
-        qDebug() << "Ошибка чтения датаграммы:" << m_listenSocket->errorString();
+        spdlog::error("Ошибка чтения датаграммы: {}", m_listenSocket->errorString().toStdString());
     }
 
     // Парсинг JSON
     QJsonDocument jsonDoc = QJsonDocument::fromJson(buffer);
     if (jsonDoc.isNull()) {
-        qDebug() << "Ошибка парсинга JSON:" << buffer;
+        spdlog::error("Ошибка парсинга JSON: " + buffer);
         return;
     }
 
     if (!jsonDoc.isObject()) {
-        qDebug() << "Ожидался объект JSON, но получен другой тип.";
+        spdlog::error("Ожидался объект JSON, но получен другой тип.");
         return;
     }
 
     QJsonObject jsonObj = jsonDoc.object();
     if(jsonObj.size() >= 1) {
-
         // LINE
         QString type = jsonObj.value("type").toString();
         if (type == "line") {
             if(jsonObj.size() != 3) {
-                qDebug() << "Недостаточно параметров для линии.";
+                spdlog::error("Недостаточно параметров для линии.");
                 return;
             }
             if(!jsonObj.contains("points") || !jsonObj.contains("color")) {
-                qDebug() << "Не те параметры для линии.";
+                spdlog::error("Не те параметры для линии.");
                 return;
             }
 
@@ -49,7 +48,7 @@ void API::readPendingDatagrams()
 
             // Проверка на наличие необходимых данных
             if (pointsArray.size() != 6) {
-                qDebug() << "Недостаточно точек для линии.";
+                spdlog::error("Недостаточно точек для линии.");
                 return;
             }
 
@@ -62,7 +61,8 @@ void API::readPendingDatagrams()
             qreal z2 = pointsArray[5].toDouble();
 
             // Здесь вы можете обработать полученные данные
-            qDebug() << "Получена линия с точками:" << x1 << y1 << z1 << x2 << y2 << z2 << "и цветом:" << color;
+            spdlog::info("Получена линия с точками: (1): {}, {}, {};  (2): {}, {}, {}   color: {}",
+                         x1, y1, z1, x2, y2, z2, color.toStdString());
 
             emit addLine(x1, y1, z1, x2, y2, z2, QColor(color));
 
@@ -73,11 +73,11 @@ void API::readPendingDatagrams()
         // CUBE
         else if(type == "cube") {
             if(jsonObj.size() != 4) {
-                qDebug() << "Недостаточно параметров для куба.";
+                spdlog::error("Недостаточно параметров для куба.");
                 return;
             }
             if(!jsonObj.contains("center") || !jsonObj.contains("color") || !jsonObj.contains("size")) {
-                qDebug() << "Не те параметры для куба.";
+                spdlog::error("Не те параметры для куба.");
                 return;
             }
             QJsonArray centerArray = jsonObj.value("center").toArray();
@@ -86,7 +86,7 @@ void API::readPendingDatagrams()
 
             // Проверка на наличие необходимых данных
             if (centerArray.size() < 3) {
-                qDebug() << "Недостаточно точек для центра куба.";
+                spdlog::error("Недостаточно точек для центра куба.");
                 return;
             }
 
@@ -96,7 +96,7 @@ void API::readPendingDatagrams()
             qreal z = centerArray[2].toDouble();
 
             // Здесь вы можете обработать полученные данные
-            qDebug() << "Получен cube с центром:" << x << y << z << "размером:" << size << "и цветом:" << color;
+            spdlog::info("Получен cube с центром: {}, {}, {};   size: {};   color: {}", x, y, z, size, color.toStdString());
 
             emit addCube(x, y, z, size, QColor(color));
         }
@@ -104,11 +104,11 @@ void API::readPendingDatagrams()
         // SPHERE
         else if(type == "sphere") {
             if(jsonObj.size() != 4) {
-                qDebug() << "Недостаточно параметров для сферы.";
+                spdlog::error("Недостаточно параметров для сферы.");
                 return;
             }
             if(!jsonObj.contains("center") || !jsonObj.contains("color") || !jsonObj.contains("radius")) {
-                qDebug() << "Не те параметры для сферы.";
+                spdlog::error("Не те параметры для сферы.");
                 return;
             }
 
@@ -118,7 +118,7 @@ void API::readPendingDatagrams()
 
             // Проверка на наличие необходимых данных
             if (centerArray.size() < 3) {
-                qDebug() << "Недостаточно точек для центра сферы.";
+                spdlog::error("Недостаточно точек для центра сферы.");
                 return;
             }
 
@@ -128,7 +128,7 @@ void API::readPendingDatagrams()
             qreal z = centerArray[2].toDouble();
 
             // Здесь вы можете обработать полученные данные
-            qDebug() << "Получен sphere с центром:" << x << y << z << "радиусом:" << radius << "и цветом:" << color;
+            spdlog::info("Получен sphere с центром: {}, {}, {};   radius: {};  color: {}", x, y, z, radius, color.toStdString());
 
             emit addSphere(x, y, z, radius, QColor(color));
         }
@@ -136,11 +136,11 @@ void API::readPendingDatagrams()
         // PLANE
         else if(type == "plane") {
             if(jsonObj.size() != 5) {
-                qDebug() << "Недостаточно параметров для плоскости.";
+                spdlog::error("Недостаточно параметров для плоскости.");
                 return;
             }
             if(!jsonObj.contains("center") || !jsonObj.contains("color") || !jsonObj.contains("width") || !jsonObj.contains("height")) {
-                qDebug() << "Не те параметры для плоскости.";
+                spdlog::error("Не те параметры для плоскости.");
                 return;
             }
 
@@ -151,7 +151,7 @@ void API::readPendingDatagrams()
 
             // Проверка на наличие необходимых данных
             if (centerArray.size() < 3) {
-                qDebug() << "Недостаточно точек для центра плоскости.";
+                spdlog::error("Недостаточно точек для центра плоскости.");
                 return;
             }
 
@@ -161,7 +161,7 @@ void API::readPendingDatagrams()
             qreal z = centerArray[2].toDouble();
 
             // Здесь вы можете обработать полученные данные
-            qDebug() << "Получен plane с центром:" << x << y << z << "шириной:" << width << "высотой:" << height << "и цветом:" << color;
+            spdlog::info("Получен plane с центром: {}, {}, {};   width: {};   height: {};   color: {};", x, y, z, width, height, color.toStdString());
 
             emit addPlane(x, y, z, width, height, QColor(color));
         }
@@ -169,7 +169,7 @@ void API::readPendingDatagrams()
         // TORUS
         else if(type == "torus") {
             if(jsonObj.size() != 8) {
-                qDebug() << "Недостаточно параметров для torus.";
+                spdlog::error("Недостаточно параметров для torus.");
                 return;
             }
             if(!jsonObj.contains("center") || !jsonObj.contains("radius") ||
@@ -177,7 +177,7 @@ void API::readPendingDatagrams()
                 !jsonObj.contains("rotationX") || !jsonObj.contains("rotationY") ||
                 !jsonObj.contains("color"))
             {
-                qDebug() << "Не те параметры для torus.";
+                spdlog::error("Не те параметры для torus.");
                 return;
             }
 
@@ -191,7 +191,7 @@ void API::readPendingDatagrams()
 
             // Проверка на наличие необходимых данных
             if (centerArray.size() < 3) {
-                qDebug() << "Недостаточно точек для центра torus.";
+                spdlog::error("Недостаточно точек для центра torus.");
                 return;
             }
 
@@ -201,9 +201,9 @@ void API::readPendingDatagrams()
             qreal z = centerArray[2].toDouble();
 
             // Здесь вы можете обработать полученные данные
-            qDebug() << "Получен torus с центром:" << x << y << z << "радиус:" << radius
-                     << "minor radius:" << minorRadius << "rings:" << rings << "rotationX:" << rotationX
-                     << "rotationY:" << rotationY << "и цветом:" << color;
+            spdlog::info("Получен torus с центром: {}, {}, {};   radius: {};   minor radius: {},   "
+                         "rings: {},   rotationX: {},   rotationY: {};   color: {}",
+                         x, y, z, radius, minorRadius, rings, rotationX, rotationY, color.toStdString());
 
             emit addTorus(x, y, z, radius, minorRadius, rings, rotationX, rotationY, QColor(color));
         }
@@ -211,14 +211,14 @@ void API::readPendingDatagrams()
         // OBJ
         else if(type == "obj") {
             if(jsonObj.size() != 7) {
-                qDebug() << "Недостаточно параметров для объекта.";
+                spdlog::error("Недостаточно параметров для объекта.");
                 return;
             }
             if(!jsonObj.contains("path") || !jsonObj.contains("center") ||
                 !jsonObj.contains("color") || !jsonObj.contains("scale") ||
                 !jsonObj.contains("rotationX") || !jsonObj.contains("rotationY"))
             {
-                qDebug() << "Не те параметры для объекта.";
+                spdlog::error("Не те параметры для объекта.");
                 return;
             }
 
@@ -231,7 +231,7 @@ void API::readPendingDatagrams()
 
             // Проверка на наличие необходимых данных
             if (centerArray.size() < 3) {
-                qDebug() << "Недостаточно точек для центра объекта.";
+                spdlog::error("Недостаточно точек для центра объекта.");
                 return;
             }
 
@@ -241,7 +241,8 @@ void API::readPendingDatagrams()
             qreal z = centerArray[2].toDouble();
 
             // Здесь вы можете обработать полученные данные
-            qDebug() << "Получен obj с центром:" << x << y << z << "путь:" << path << "scale:" << scale << "и цветом:" << color;
+            spdlog::info("Получен obj с центром: {}, {}, {};   path: {};   scale: {};   color: {}",
+                         x, y, z, path.toStdString(), scale, color.toStdString());
 
             emit addObj(path, x, y, z, scale, rotationX, rotationY, QColor(color));
         }
@@ -249,14 +250,14 @@ void API::readPendingDatagrams()
         // TEXTURE OBJ
         else if(type == "textureObj") {
             if(jsonObj.size() != 7) {
-                qDebug() << "Недостаточно параметров для объекта с текстурой.";
+                spdlog::error("Недостаточно параметров для объекта с текстурой.");
                 return;
             }
             if(!jsonObj.contains("objPath") || !jsonObj.contains("texturePath") ||
                 !jsonObj.contains("center") || !jsonObj.contains("scale") ||
                 !jsonObj.contains("rotationX") || !jsonObj.contains("rotationY"))
             {
-                qDebug() << "Не те параметры для объекта с текстурой.";
+                spdlog::error("Не те параметры для объекта с текстурой.");
                 return;
             }
 
@@ -269,7 +270,7 @@ void API::readPendingDatagrams()
 
             // Проверка на наличие необходимых данных
             if (centerArray.size() < 3) {
-                qDebug() << "Недостаточно точек для центра объекта с текстурой.";
+                spdlog::error("Недостаточно точек для центра объекта с текстурой.");
                 return;
             }
 
@@ -279,21 +280,22 @@ void API::readPendingDatagrams()
             qreal z = centerArray[2].toDouble();
 
             // Здесь вы можете обработать полученные данные
-            qDebug() << "Получен obj с центром:" << x << y << z << "путь до объекта:"
-                     << objPath << "путь до текстуры:" << texturePath << "scale:"
-                     << scale;
+            spdlog::info("Получен obj с центром: {}, {}, {};   object path: {};   texture path: {};   scale: {}",
+                         x, y, z, objPath.toStdString(), texturePath.toStdString(), scale);
 
             emit addTextureObj(objPath, texturePath, x, y, z, scale, rotationX, rotationY);
         }
         else if(type == "clearAll") {
             emit clearAll();
+
+            spdlog::info("Получена полная очистка сцены");
         }
         else {
-            qDebug() << "Неизвестный тип сообщения:" << type;
+            spdlog::error("Неизвестный тип сообщения: {}", type.toStdString());
         }
     }
     else {
-        qDebug() << "Не хватает аргументов:";
+        spdlog::error("Не хватает аргументов");
     }
 }
 
@@ -318,16 +320,10 @@ void API::loadSettings() {
 
 void API::updateBindSocket() {
     if (m_listenSocket->state() != QAbstractSocket::UnconnectedState) {
-        m_listenSocket->abort(); // Use abort() instead of close() for immediate disconnection
+        m_listenSocket->abort();
     }
 
-    // Wait until the socket is in the UnconnectedState
-    // while (m_listenSocket->state() != QAbstractSocket::UnconnectedState) {
-    //     QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents); // Process events to allow the socket to change state
-    //     QThread::msleep(10); // Sleep for a short time to avoid busy-waiting
-    // }
-
-    qDebug() << "new port: " << m_listenPort;
+    spdlog::info("new port: {}", m_listenPort);
     m_listenSocket->bind(QHostAddress::Any, m_listenPort);
     connect(m_listenSocket, &QUdpSocket::readyRead, this, &API::readPendingDatagrams);
 }

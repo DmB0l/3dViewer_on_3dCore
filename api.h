@@ -13,6 +13,10 @@
 
 #include <QColor>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 class API : public QObject
 {
     Q_OBJECT

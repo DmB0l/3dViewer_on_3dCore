@@ -25,7 +25,6 @@
 #include <QGraphicsView>
 #include <QGraphicsProxyWidget>
 
-#include "lineentity.h"
 #include "drawing3d.h"
 #include "fieldsettingswidget.h"
 #include "camerasettingswidget.h"

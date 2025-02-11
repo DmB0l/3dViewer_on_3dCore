@@ -15,7 +15,9 @@
 #include <Qt3DRender/QObjectPicker>
 #include <Qt3DRender/QSceneLoader>
 
-#include "lineentity.h"
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 class Drawing3d : public QObject
 {

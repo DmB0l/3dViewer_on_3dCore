@@ -4,6 +4,8 @@ Drawing3d::Drawing3d(QObject *parent) : QObject(parent)
 {}
 
 Qt3DCore::QEntity* Drawing3d::drawPlane(QVector3D pos, double width, double height, QColor color, Qt3DCore::QEntity *root) {
+    spdlog::info("попытка создания и отрисовки plane");
+
     Qt3DExtras::QPlaneMesh *planeMesh = new Qt3DExtras::QPlaneMesh();
     planeMesh->setWidth(width);
     planeMesh->setHeight(height);
@@ -31,11 +33,14 @@ Qt3DCore::QEntity* Drawing3d::drawPlane(QVector3D pos, double width, double heig
     });
     planeEntity->addComponent(picker);
 
+    spdlog::info("создание и отрисовка plane успешно");
+
     return planeEntity;
 }
 
 Qt3DCore::QEntity* Drawing3d::drawCube(QVector3D pos, double size, QColor color, Qt3DCore::QEntity *root) {
-    // Cuboid shape data
+    spdlog::info("попытка создания и отрисовки cube");
+
     Qt3DExtras::QCuboidMesh *cuboid = new Qt3DExtras::QCuboidMesh();
 
     Qt3DCore::QTransform *cuboidTransform = new Qt3DCore::QTransform();
@@ -64,11 +69,15 @@ Qt3DCore::QEntity* Drawing3d::drawCube(QVector3D pos, double size, QColor color,
     });
     cuboidEntity->addComponent(picker);
 
+    spdlog::info("создание и отрисовка cube успешно");
+
     return cuboidEntity;
 }
 
 Qt3DCore::QEntity *Drawing3d::drawTorus(QVector3D pos, double radius, double minorRadius, int rings,
                                         double rotationX, double rotationY, QColor color, Qt3DCore::QEntity *root) {
+    spdlog::info("попытка создания и отрисовки torus");
+
     Qt3DExtras::QTorusMesh *torus = new Qt3DExtras::QTorusMesh();
     torus->setRadius(radius);
     torus->setMinorRadius(minorRadius);
@@ -102,10 +111,14 @@ Qt3DCore::QEntity *Drawing3d::drawTorus(QVector3D pos, double radius, double min
     });
     cuboidEntity->addComponent(picker);
 
+    spdlog::info("создание и отрисовка torus успешно");
+
     return cuboidEntity;
 }
 
 Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor color, Qt3DCore::QEntity *root) {
+    spdlog::info("попытка создания и отрисовки sphere");
+
     Qt3DExtras::QSphereMesh *sphereMesh = new Qt3DExtras::QSphereMesh();
     sphereMesh->setRadius(radius);
 
@@ -132,15 +145,18 @@ Qt3DCore::QEntity* Drawing3d::drawSphere(QVector3D pos, double radius, QColor co
     });
     sphereEntity->addComponent(picker);
 
+    spdlog::info("создание и отрисовка sphere успешно");
+
     return sphereEntity;
 }
-
 
 
 Qt3DCore::QEntity* Drawing3d::drawTextureObj(QString objPath, QString texturePath, QVector3D pos,
                                              double scale, double rotationX, double rotationY,
                                              Qt3DCore::QEntity *root)
 {
+    spdlog::info("попытка создания и отрисовки texture obj");
+
     Qt3DRender::QMesh *objMesh = new Qt3DRender::QMesh();
     // const QUrl url = QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum.obj");
     objMesh->setSource(QUrl(objPath));
@@ -168,6 +184,8 @@ Qt3DCore::QEntity* Drawing3d::drawTextureObj(QString objPath, QString texturePat
 
     objEntity->setObjectName("texture obj");
 
+    spdlog::info("создание и отрисовка texture obj успешно");
+
     return objEntity;
 }
 
@@ -175,7 +193,8 @@ Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor co
                                       double scale, double rotationX, double rotationY,
                                       Qt3DCore::QEntity *root)
 {
-    // Загружаем меш из файла .obj
+    spdlog::info("попытка создания и отрисовки obj");
+
     Qt3DRender::QMesh *objMesh = new Qt3DRender::QMesh();
     const QUrl url = QUrl(filePath);
 
@@ -219,6 +238,8 @@ Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor co
         emit entityClicked(objEntity, color);
     });
     objEntity->addComponent(picker);
+
+    spdlog::info("создание и отрисовка obj успешно");
 
     return objEntity;
 }
@@ -299,6 +320,8 @@ Qt3DCore::QEntity* Drawing3d::drawLine(double x1, double y1, double z1,
         lineEntity->addComponent(picker);
     }
 
+    // spdlog::info("создание и отрисовка line успешно");
+
     return lineEntity;
 }
 
@@ -309,6 +332,8 @@ QVector<Qt3DCore::QEntity *> Drawing3d::createGrid(double minX, double minY, dou
                                                    uint32_t segmentCountZ,
                                                    Qt3DCore::QEntity *root)
 {
+    spdlog::info("попытка создания и отрисовки grid");
+
     QVector<Qt3DCore::QEntity *> lines;
 
     for (float i = minX; i <= maxX; i += segmentCountX) {
@@ -354,10 +379,14 @@ QVector<Qt3DCore::QEntity *> Drawing3d::createGrid(double minX, double minY, dou
                      );
     }
 
+    spdlog::info("создание и отрисовка grid успешно");
+
     return lines;
 }
 
 QVector<Qt3DCore::QEntity *> Drawing3d::createHeart(Qt3DCore::QEntity *parentEntity, QVector3D pos) {
+    spdlog::info("попытка создания и отрисовки heart");
+
     QVector<Qt3DCore::QEntity *> heart;
 
     const int numPoints = 100;
@@ -371,6 +400,8 @@ QVector<Qt3DCore::QEntity *> Drawing3d::createHeart(Qt3DCore::QEntity *parentEnt
             heart.append(this->drawSphere(QVector3D(pos.x() + x, pos.y() + y, pos.z() + z), 0.5f, QColor(Qt::red), parentEntity));
         }
     }
+
+    spdlog::info("создание и отрисовка heart успешно");
 
     return heart;
 }
@@ -391,6 +422,8 @@ Qt3DCore::QEntity* Drawing3d::createStar(Qt3DCore::QEntity *parent, const QVecto
     starEntity->addComponent(transform);
     starEntity->addComponent(material);
 
+    // spdlog::info("создание и отрисовка star успешно");
+
     return starEntity;
 }
 
@@ -398,6 +431,8 @@ QVector<Qt3DCore::QEntity*> Drawing3d::createStarrySky(Qt3DCore::QEntity *rootEn
                                                         double minX, double minY, double minZ,
                                                         double maxX, double maxY, double maxZ)
 {
+    spdlog::info("попытка создания и отрисовки star sky");
+
     QVector<Qt3DCore::QEntity*> stars;
 
     QRandomGenerator *gen = QRandomGenerator::global();
@@ -454,6 +489,9 @@ QVector<Qt3DCore::QEntity*> Drawing3d::createStarrySky(Qt3DCore::QEntity *rootEn
             stars.append(createStar(rootEntity, position, size));
         }
     }
+
+    spdlog::info("создание и отрисовка star sky успешно");
+
     return stars;
 }
 

@@ -15,6 +15,10 @@
 #include <QTimer>
 #include <QVector3D>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 class ExplosionEffect : public Qt3DCore::QEntity {
 public:
     explicit ExplosionEffect(Qt3DCore::QNode *parent = nullptr);

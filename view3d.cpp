@@ -7,6 +7,14 @@ View3d::View3d(QQuickWidget *quickWidget, QObject *parent)
     : QObject{parent},
     m_quickWidget{quickWidget}
 {
+    spdlog::info("Инициализация quick widget qml");
+
+    connect(m_quickWidget, &QQuickWidget::statusChanged, this, [=](QQuickWidget::Status status) {
+        if(status == QQuickWidget::Status::Ready) {
+            spdlog::info("Quick widget полностью загружен и готов");
+        }
+    });
+
     m_quickWidget->rootContext()->setContextProperty("View3Dcpp", this);
     m_quickWidget->setSource(QUrl(QStringLiteral("qrc:/qml/View3d.qml")));
 
@@ -38,11 +46,17 @@ Qt3DCore::QEntity *View3d::rootEntity() const {
 }
 
 void View3d::setColorSettings(const QColor &color) {
+    spdlog::info("Попытка установки новых параметров цветов в qml");
+
     m_backgroundColor = color;
     m_rootEntity->componentsOfType<Qt3DRender::QRenderSettings>().at(0)->activeFrameGraph()->setProperty("clearColor", m_backgroundColor);
+
+    spdlog::info("Установка новых параметров цветов в qml успешно");
 }
 
 void View3d::setCameraSettings(const CameraSettings &newCameraSettings) {
+    spdlog::info("Попытка установки новых параметров камеры в qml");
+
     m_cameraSettings = newCameraSettings;
 
     m_cameraController->setLinearSpeed(m_cameraSettings.linearSpeed);
@@ -51,9 +65,13 @@ void View3d::setCameraSettings(const CameraSettings &newCameraSettings) {
     m_camera->setFieldOfView(newCameraSettings.fieldOfView);
     m_camera->setNearPlane(newCameraSettings.nearPlane);
     m_camera->setFarPlane(newCameraSettings.farPlane);
+
+    spdlog::info("Установка новых параметров камеры в qml успешно");
 }
 
 void View3d::createSelectedEntityText(Qt3DCore::QEntity *entity) {
+    spdlog::info("Создание текста для выбранного entity {} в qml", entity->objectName().toStdString());
+
     QString selectedEntityText;
     if(entity->objectName() == "line") {
         float *positions = reinterpret_cast<float*>(entity->componentsOfType<Qt3DRender::QGeometryRenderer>().at(0)->geometry()->attributes().at(0)->buffer()->data().data());

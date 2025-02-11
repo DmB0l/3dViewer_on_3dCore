@@ -51,6 +51,8 @@ void FieldSettingsWidget::showEvent(QShowEvent *event) {
 }
 
 void FieldSettingsWidget::saveSettings() {
+    spdlog::info("Сохранение параметров сетки");
+
     m_settings.minX = ui->SB_minX->value();
     m_settings.minY = ui->SB_minY->value();
     m_settings.minZ = ui->SB_minZ->value();
@@ -93,10 +95,14 @@ void FieldSettingsWidget::saveSettings() {
 }
 
 void FieldSettingsWidget::loadSettings() {
+    spdlog::info("Загрузка параметров сетки");
+
     QSettings settings("config.ini", QSettings::IniFormat);
     if(!settings.childGroups().contains("GRID PARAMETERS") ||
         !settings.childGroups().contains("SEGMENT PARAMETERS") ||
-        !settings.childGroups().contains("OPTIONS")) {
+        !settings.childGroups().contains("OPTIONS"))
+    {
+        spdlog::info("Сохранение параметров сетки при первом запуске");
         saveSettings();
     }
     else {
@@ -124,6 +130,8 @@ void FieldSettingsWidget::loadSettings() {
 }
 
 void FieldSettingsWidget::updateParameters() {
+    spdlog::info("Обновление параметров сетки в гуи");
+
     ui->SB_minX->setValue(m_settings.minX);
     ui->SB_minY->setValue(m_settings.minY);
     ui->SB_minZ->setValue(m_settings.minZ);

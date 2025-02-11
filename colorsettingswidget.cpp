@@ -52,12 +52,15 @@ void ColorSettingsWidget::closeEvent(QCloseEvent *event) {
 }
 
 void ColorSettingsWidget::pickColor(bool checked) {
-    // Открываем диалог выбора цвета
+    spdlog::info("Выбор цвета");
+
     m_backgroundColor = QColorDialog::getColor(m_backgroundColor, this, "Select Color", QColorDialog::DontUseNativeDialog);
     ui->PB_chooseBackgroundColor->setStyleSheet("background-color: " + m_backgroundColor.name() + ";");
 }
 
 void ColorSettingsWidget::saveSettings() {
+    spdlog::info("Сохранение параметров настройки цвета");
+
     QSettings settings("config.ini", QSettings::IniFormat);
     settings.beginGroup("COLOR PARAMETERS");
     settings.setValue("backgroundColor", m_backgroundColor.name());
@@ -69,8 +72,11 @@ QColor ColorSettingsWidget::backgroundColor() const {
 }
 
 void ColorSettingsWidget::loadSettings() {
+    spdlog::info("Загрузка параметров настройки цвета");
+
     QSettings settings("config.ini", QSettings::IniFormat);
     if(!settings.childGroups().contains("COLOR PARAMETERS")) {
+        spdlog::info("Сохранение параметров настройки цвета при первом запуске");
         saveSettings();
     }
     else {

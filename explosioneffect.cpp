@@ -3,6 +3,9 @@
 
 ExplosionEffect::ExplosionEffect(Qt3DCore::QNode *parent)
     : Qt3DCore::QEntity(parent) {
+
+    spdlog::info("попытка создания и отрисовки взрыва");
+
     // Создаем сферу для эффекта взрыва
     Qt3DExtras::QSphereMesh *sphereMesh = new Qt3DExtras::QSphereMesh();
     sphereMesh->setRadius(0.5f);
@@ -46,6 +49,8 @@ ExplosionEffect::ExplosionEffect(Qt3DCore::QNode *parent)
     connect(scaleAnimation, &QPropertyAnimation::finished, this, [this]() {
         deleteLater();
     });
+
+    spdlog::info("создание и отрисовка взрыва успешно");
 }
 
 void ExplosionEffect::setPosition(const QVector3D &position) {

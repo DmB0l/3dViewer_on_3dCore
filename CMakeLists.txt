@@ -32,6 +32,8 @@ find_package(Qt5 REQUIRED COMPONENTS
     3DLogic
 )
 
+find_package(spdlog REQUIRED)
+
 add_executable(${PROJECT_NAME}
   ${PROJECT_SOURCES}
   res.qrc
@@ -51,5 +53,6 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::3DExtras
     Qt5::3DLogic
     Qt5::3DAnimation
+    spdlog::spdlog
 )
 

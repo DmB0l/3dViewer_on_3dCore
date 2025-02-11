@@ -51,6 +51,8 @@ void CameraSettingsWidget::showEvent(QShowEvent *event) {
 }
 
 void CameraSettingsWidget::saveSettings() {
+    spdlog::info("Сохранение параметров камеры");
+
     m_settings.linearSpeed = ui->SB_linearSpeed->value();
     m_settings.lookSpeed = ui->SB_lookSpeed->value();
     m_settings.farPlane = ui->SB_farPlane->value();
@@ -68,8 +70,11 @@ void CameraSettingsWidget::saveSettings() {
 }
 
 void CameraSettingsWidget::loadSettings() {
+    spdlog::info("Загрузка параметров камеры");
+
     QSettings settings("config.ini", QSettings::IniFormat);
     if(!settings.childGroups().contains("CAMERA PARAMETERS")) {
+        spdlog::info("Сохранение параметров камеры при первом запуске");
         saveSettings();
     }
     else {
@@ -84,6 +89,7 @@ void CameraSettingsWidget::loadSettings() {
 }
 
 void CameraSettingsWidget::updateParameters() {
+    spdlog::info("Обновление параметров камеры для гуи");
     ui->SB_linearSpeed->setValue(m_settings.linearSpeed);
     ui->SB_lookSpeed->setValue(m_settings.lookSpeed);
     ui->SB_farPlane->setValue(m_settings.farPlane);

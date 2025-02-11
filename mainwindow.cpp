@@ -482,6 +482,8 @@ void MainWindow::addCowHell() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
+    spdlog::info("Попытка закрытия окон настроек");
+
     if(m_fieldSettingsWidget) {
         m_fieldSettingsWidget->close();
     }
@@ -493,17 +495,22 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     if(m_colorSettingsWidget) {
         m_colorSettingsWidget->close();
     }
+
+    spdlog::info("Закрытие окон настроек успешно");
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if(event->key() == Qt::Key_Delete) {
         if(m_selectedEntity != nullptr) {
+            spdlog::info("попытка удаления: {}", m_selectedEntity->objectName().toStdString());
             m_viewElements.removeOne(m_selectedEntity);
 
             m_selectedEntity->setEnabled(false);
             m_selectedEntity->deleteLater();
             m_selectedEntity = nullptr;
             m_qmlView->clearSelectedEntityText();
+
+            spdlog::info("удаление {} прошло успешно", m_selectedEntity->objectName().toStdString());
         }
     }
 }

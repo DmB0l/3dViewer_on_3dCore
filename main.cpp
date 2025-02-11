@@ -2,33 +2,48 @@
 #include <QGuiApplication>
 
 #include "mainwindow.h"
-#include "view3d.h"
+
+#define MAX_LOG_COUNT 5
+
+void initializeLogger() {
+    QDateTime now = QDateTime::currentDateTime();
+
+    QString filename = QString("logs/%1-%2-%3_%4-%5.log")
+                           .arg(now.date().year(), 4, 10, QLatin1Char('0')) // Год
+                           .arg(now.date().month(), 2, 10, QLatin1Char('0')) // Месяц
+                           .arg(now.date().day(), 2, 10, QLatin1Char('0'))   // День
+                           .arg(now.time().hour(), 2, 10, QLatin1Char('0'))  // Час
+                           .arg(now.time().minute(), 2, 10, QLatin1Char('0')); // Минута
+
+    QDir dir;
+    if (!dir.exists("logs")) {
+        dir.mkpath("logs");
+    }
+    dir.cd("logs");
+    dir.setNameFilters(QStringList("*.log"));
+
+    QFileInfoList fileNames = dir.entryInfoList();
+    for(int i = 0; i <= fileNames.size() - MAX_LOG_COUNT; i++) {
+        QFile::remove(fileNames[i].absoluteFilePath());
+    }
+
+    auto file_logger = spdlog::basic_logger_mt("file_logger", filename.toStdString());
+
+    spdlog::set_default_logger(file_logger);
+}
+
 
 int main(int argc, char *argv[])
 {
-//     {
-//         // Set OpenGL requirements
-//         QSurfaceFormat format = QSurfaceFormat::defaultFormat();
-// #ifndef QT_OPENGL_ES_2
-//         format.setVersion(4, 1);
-//         format.setProfile(QSurfaceFormat::CoreProfile);
-//         format.setSamples(4);
-// #else
-//         format.setVersion(3, 0);
-//         format.setProfile(QSurfaceFormat::NoProfile);
-//         format.setRenderableType(QSurfaceFormat::OpenGLES);
-// #endif
-//         QSurfaceFormat::setDefaultFormat(format);
-//     }
-
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication a(argc, argv);
 
     qRegisterMetaType<QVector<Qt3DCore::QEntity*>>("QVector<Qt3DCore::QEntity*>");
-    // qmlRegisterType<View3d>("View3dModule", 1, 0, "View3dComponent");
+
+    initializeLogger();
+    spdlog::info("Start program");
 
     MainWindow mainWindow;
     mainWindow.show();
-    // Worker worker;
     return a.exec();
 }
