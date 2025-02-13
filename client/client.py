@@ -99,12 +99,13 @@ if __name__ == '__main__':
     client.sphere(30.5, 30.5, 2.5, 5, "white")
     client.plane(0, 0, 0, 5, 15, "white")
 
-    client.obj("file:///home/user061/projects/3dViewer_on_3dCore/res/cow-nonormals.obj",
+    client.obj("/home/user/3dViewer_on_3dCore/res/cow-nonormals.obj",
                40.5, 40.5, 10, 3, 90, 30, "pink")
 
-    client.textureObj("file:///home/user/3dViewer_on_3dCore/res/drum.obj",
-                      "file:///home/user/3dViewer_on_3dCore/res/drum_DefaultMaterial_BaseColor.png",
+    client.textureObj("/home/user/3dViewer_on_3dCore/res/drum.obj",
+                      "/home/user/3dViewer_on_3dCore/res/drum_DefaultMaterial_BaseColor.png",
                       10, 3.5, 10, 3,90, 90)
 
     client.torus(60, 0, 60, 5, 1, 30, 0, 135, "white")
-    client.clearAll()
+    # client.clearAll()
+

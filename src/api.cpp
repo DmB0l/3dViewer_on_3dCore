@@ -244,7 +244,12 @@ void API::readPendingDatagrams()
             spdlog::info("Получен obj с центром: {}, {}, {};   path: {};   scale: {};   color: {}",
                          x, y, z, path.toStdString(), scale, color.toStdString());
 
-            emit addObj(path, x, y, z, scale, rotationX, rotationY, QColor(color));
+            if(!QFile::exists(path)) {
+                spdlog::error("Файл {} не существует. Невозможно отрисовать объект", path.toStdString());
+            }
+            else {
+                emit addObj(path, x, y, z, scale, rotationX, rotationY, QColor(color));
+            }
         }
 
         // TEXTURE OBJ
@@ -280,10 +285,19 @@ void API::readPendingDatagrams()
             qreal z = centerArray[2].toDouble();
 
             // Здесь вы можете обработать полученные данные
-            spdlog::info("Получен obj с центром: {}, {}, {};   object path: {};   texture path: {};   scale: {}",
+            spdlog::info("Получен textureObj с центром: {}, {}, {};   object path: {};   texture path: {};   scale: {}",
                          x, y, z, objPath.toStdString(), texturePath.toStdString(), scale);
 
-            emit addTextureObj(objPath, texturePath, x, y, z, scale, rotationX, rotationY);
+            if(!QFile::exists(texturePath)) {
+                spdlog::error("Файл {} не существует. Невозможно отрисовать текстуру", texturePath.toStdString());
+            }
+
+            if(!QFile::exists(objPath)) {
+                spdlog::error("Файл {} не существует. Невозможно отрисовать объект", objPath.toStdString());
+            }
+            else {
+                emit addTextureObj(objPath, texturePath, x, y, z, scale, rotationX, rotationY);
+            }
         }
         else if(type == "clearAll") {
             emit clearAll();

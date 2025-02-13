@@ -159,13 +159,13 @@ Qt3DCore::QEntity* Drawing3d::drawTextureObj(QString objPath, QString texturePat
 
     Qt3DRender::QMesh *objMesh = new Qt3DRender::QMesh();
     // const QUrl url = QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum.obj");
-    objMesh->setSource(QUrl(objPath));
+    objMesh->setSource(QUrl::fromLocalFile(objPath));
 
     Qt3DExtras::QDiffuseSpecularMaterial *objMaterial = new Qt3DExtras::QDiffuseSpecularMaterial();
 
     Qt3DRender::QTextureLoader *textureLoader1 = new Qt3DRender::QTextureLoader();
     // textureLoader1->setSource(QUrl::fromLocalFile("/home/user061/projects/3dViewer_on_3dCore/res/drum_DefaultMaterial_BaseColor.png"));
-    textureLoader1->setSource(QUrl(texturePath));
+    textureLoader1->setSource(QUrl::fromLocalFile(texturePath));
     textureLoader1->setWrapMode(Qt3DRender::QTextureWrapMode(Qt3DRender::QTextureWrapMode::Repeat));
     objMaterial->setDiffuse(QVariant::fromValue(textureLoader1));
     // objMaterial->setAmbient(QColor(0, 0, 100));
@@ -196,9 +196,7 @@ Qt3DCore::QEntity* Drawing3d::drawObj(QString filePath, QVector3D pos, QColor co
     spdlog::info("попытка создания и отрисовки obj");
 
     Qt3DRender::QMesh *objMesh = new Qt3DRender::QMesh();
-    const QUrl url = QUrl(filePath);
-
-    objMesh->setSource(url);
+    objMesh->setSource(QUrl::fromLocalFile(filePath));
 
     // Создаем материал для объекта
     Qt3DExtras::QPhongMaterial *objMaterial = new Qt3DExtras::QPhongMaterial();

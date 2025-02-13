@@ -10,7 +10,7 @@
 #include <QJsonArray>
 
 #include <QSettings>
-
+#include <QFile>
 #include <QColor>
 
 #include <spdlog/spdlog.h>

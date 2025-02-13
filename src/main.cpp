@@ -43,8 +43,6 @@ int main(int argc, char *argv[])
     initializeLogger();
     spdlog::info("Start program");
 
-    qDebug() << QColor::colorNames();
-
     MainWindow mainWindow;
     mainWindow.show();
     return a.exec();
