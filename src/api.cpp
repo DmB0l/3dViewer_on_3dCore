@@ -82,7 +82,7 @@ void API::readPendingDatagrams()
             }
             QJsonArray centerArray = jsonObj.value("center").toArray();
             QString color = jsonObj.value("color").toString();
-            int size = jsonObj.value("size").toInt();
+            double size = jsonObj.value("size").toDouble();
 
             // Проверка на наличие необходимых данных
             if (centerArray.size() < 3) {

@@ -16,7 +16,7 @@ View3d::View3d(QQuickWidget *quickWidget, QObject *parent)
     });
 
     m_quickWidget->rootContext()->setContextProperty("View3Dcpp", this);
-    m_quickWidget->setSource(QUrl(QStringLiteral("qrc:/qml/View3d.qml")));
+    m_quickWidget->setSource(QUrl(QStringLiteral("qrc:/qml/src/View3d.qml")));
 
     m_rootObject = m_quickWidget->rootObject();
     m_rootEntity = m_rootObject->findChild<Qt3DCore::QEntity *>("rootEntity");
