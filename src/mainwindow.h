@@ -77,6 +77,7 @@ private:
 
     QList<Qt3DCore::QEntity *> m_viewElements;
     QVector<Qt3DCore::QEntity *> m_grid;
+    QVector<Qt3DCore::QEntity *> m_lights;
     QVector<Qt3DCore::QEntity *> m_starSky;
 
     FieldSettingsWidget *m_fieldSettingsWidget = nullptr;

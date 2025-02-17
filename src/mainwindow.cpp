@@ -131,7 +131,17 @@ MainWindow::MainWindow(QWidget *parent)
                                        m_gridSettings.segmentCountY,
                                        m_gridSettings.segmentCountZ,
                                        m_rootEntity);
+
+        m_lights = m_drawing->createLightOnGrid(m_gridSettings.minX,
+                                                m_gridSettings.minY,
+                                                m_gridSettings.minZ,
+                                                m_gridSettings.maxX,
+                                                m_gridSettings.maxY,
+                                                m_gridSettings.maxZ,
+                                                m_rootEntity);
     }
+
+
 
     // //TORUS
     // m_viewElements.append(m_drawing->drawTorus(QVector3D(10.5, 10.5, 10.5), 1.0f, 0.5f, 30, 90, 0, QColor(QRgb(0x665423)), m_rootEntity));
@@ -144,12 +154,14 @@ MainWindow::MainWindow(QWidget *parent)
     //     m_viewElements.append(m_drawing->drawCube(QVector3D(i + 0.5, 0.5, i + 0.5), 1.0f, QColor(QRgb(0x665423)), m_rootEntity));
     // }
 
-    // //TEXTURE
-    // m_viewElements.append(m_drawing->drawTextureObj("qrc:/res/drum.obj",
-    //                                                 "qrc:/res/drum_DefaultMaterial_BaseColor.png",
-    //                                                 QVector3D(16.5, 0.5, 13.5),
-    //                                                 1.0f, 0, 0,
-    //                                                 m_rootEntity));
+    //TEXTURE
+    m_viewElements.append(m_drawing->drawTextureObj("/home/user061/projects/3dViewer_on_3dCore/res/cow/cow.obj",
+                                                    "/home/user061/projects/3dViewer_on_3dCore/res/cow_texture.jpg",
+                                                    QVector3D(16.5, 0.5, 18.5),
+                                                    1.0f, 0, 180,
+                                                    m_rootEntity));
+
+    // m_drawing->drawSceneLoader(QVector3D(16.5, 0.5, 12.5), m_rootEntity);
 
 
     // //HEART

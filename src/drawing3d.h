@@ -25,7 +25,10 @@ class Drawing3d : public QObject
 public:
     Drawing3d(QObject *parent = nullptr);
 
+
 public slots:
+    Qt3DCore::QEntity* createPointLight(QVector3D pos, QColor color, Qt3DCore::QEntity *rootEntity);
+
     Qt3DCore::QEntity* drawTextureObj(QString objPath, QString texturePath, QVector3D pos,
                                       double scale, double rotationX, double rotationY,
                                       Qt3DCore::QEntity *root);
@@ -49,6 +52,8 @@ public slots:
                                             uint32_t segmentCountY = 1,
                                             uint32_t segmentCountZ = 1,
                                             Qt3DCore::QEntity *root = nullptr);
+
+    QVector<Qt3DCore::QEntity *> createLightOnGrid(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, Qt3DCore::QEntity *root);
 
     QVector<Qt3DCore::QEntity *> createHeart(Qt3DCore::QEntity *parentEntity, QVector3D pos);
 
