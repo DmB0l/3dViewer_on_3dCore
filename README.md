@@ -108,3 +108,8 @@ make
 
 ## License
 Project sources distributed under [MIT license](https://github.com/DmB0l/3dViewer_on_3dCore/blob/main/LICENSE), third parties distributed under their own licences
+
+$$
+F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i \omega t} \, dt
+$$
+
